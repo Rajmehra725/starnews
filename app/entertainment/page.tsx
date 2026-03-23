@@ -1,61 +1,97 @@
-// app/news/business/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-type Article = {
-  title: string;
-  description: string;
-  url: string;
-  urlToImage: string | null;
-  publishedAt: string;
+const Business = () => {
+  return (
+    <section className="py-10 bg-white">
+      <div className="max-w-7xl mx-auto px-4">
+
+        {/* Heading */}
+        <div className="border-l-4 border-blue-600 pl-3 mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">
+            व्यापार की ताज़ा खबरें
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+          {/* LEFT GRID NEWS */}
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
+
+              {[1,2,3,4,5,6].map((item)=>(
+                <div key={item} className="group">
+
+                  <div className="relative overflow-hidden rounded-lg">
+                    <Image
+                      src={`/assets/img/news/news3${item}.jpg`}
+                      alt="news"
+                      width={300}
+                      height={200}
+                      className="w-full h-40 object-cover group-hover:scale-105 transition duration-300"
+                    />
+
+                    <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1">
+                      News
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-gray-500 mt-2">
+                    January 17, 2017
+                  </p>
+
+                  <Link
+                    href="/news_info"
+                    className="text-sm font-semibold text-gray-900 hover:text-red-600"
+                  >
+                    अवैध पशु परिवहन पर पन्ना पुलिस की बड़ी कार्रवाई , एक आरोपी गिरफ्तार
+                  </Link>
+
+                </div>
+              ))}
+
+            </div>
+          </div>
+
+          {/* RIGHT FEATURED */}
+          <div className="lg:col-span-4">
+            <div className="relative rounded-xl overflow-hidden group">
+
+              <Image
+                src="/assets/img/news/news31.jpg"
+                alt="news"
+                width={400}
+                height={500}
+                className="w-full h-[420px] object-cover group-hover:scale-105 transition duration-500"
+              />
+
+              <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-5">
+                <span className="bg-black text-white text-xs px-3 py-1 w-fit mb-2">
+                  News
+                </span>
+
+                <p className="text-white text-sm mb-2">
+                  06 Oct 2025
+                </p>
+
+                <Link
+                  href="/news_info"
+                  className="text-white font-semibold text-lg hover:text-yellow-400"
+                >
+                  रैपुरा में कैट के राष्ट्रीय अध्यक्ष का आगमन आज, जिलाध्यक्ष
+                  केसरवानी ने लोगो से समय पर पहुंचने की अपील
+                </Link>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
 };
 
-export default function BusinessPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      try {
-        const res = await fetch(
-          "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=293cf473654e4363b1f26f3c4d38676d"
-        );
-        const data = await res.json();
-        setArticles(data.articles);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBusiness();
-  }, []);
-
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-3xl font-bold">Business News</h1>
-      {articles.map((item, idx) => (
-        <div key={idx} className="border rounded shadow p-4">
-          {item.urlToImage && (
-            <img
-              src={item.urlToImage}
-              alt={item.title}
-              className="w-full h-48 object-cover rounded"
-            />
-          )}
-          <h2 className="text-xl font-semibold mt-2">{item.title}</h2>
-          <p className="text-gray-700 mt-1">{item.description}</p>
-          <a href={item.url} target="_blank" className="text-blue-600 mt-2 block">
-            Read More
-          </a>
-          <p className="text-sm text-gray-400 mt-1">
-            {new Date(item.publishedAt).toLocaleString()}
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-}
+export default Business;

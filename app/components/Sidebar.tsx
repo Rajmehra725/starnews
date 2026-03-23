@@ -11,7 +11,7 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
     { name: "Panna & Satna", href: "/panna", icon: <MapPin size={18} /> },
     { name: "Home", href: "/", icon: "🏠" },
     { name: "India", href: "/india", icon: "🇮🇳" },
-    { name: "World", href: "/world", icon: "🌍" },
+    { name: "World", href: "/World", icon: "🌍" },
     { name: "Sports", href: "/sports", icon: "🏏" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },
