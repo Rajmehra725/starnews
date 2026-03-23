@@ -10,8 +10,6 @@ import {
   MessageCircle
 } from "lucide-react";
 
-const socket: Socket = io("https://starnewsbackend.onrender.com");
-
 // TYPES
 type Comment = {
   _id: string;
@@ -71,6 +69,11 @@ export default function NewsPage() {
   useEffect(() => {
     fetchNews();
 
+    // ✅ socket inside useEffect
+    const socket: Socket = io(
+      "https://starnewsbackend.onrender.com"
+    );
+
     socket.on("likeUpdated", ({ newsId, likes }) => {
       setNewsList((prev) =>
         prev.map((n) => (n._id === newsId ? { ...n, likes } : n))
@@ -78,7 +81,7 @@ export default function NewsPage() {
     });
 
     return () => {
-      socket.off();
+      socket.disconnect();
     };
   }, []);
 
@@ -99,12 +102,12 @@ export default function NewsPage() {
 
       {/* HERO */}
       {hero && (
-        <div className="relative rounded-xl overflow-hidden shadow cursor-pointer group">
+        <div className="relative rounded-xl overflow-hidden shadow group">
 
           <img
             src={hero.featuredImage}
             alt={hero.title}
-            className="w-full max-w-full h-[220px] md:h-[360px] object-cover group-hover:scale-105 transition"
+            className="w-full h-[220px] md:h-[360px] object-cover"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
@@ -148,18 +151,18 @@ export default function NewsPage() {
       )}
 
       {/* GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
         {newsList.slice(1).map((news) => (
           <div
             key={news._id}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden group"
+            className="bg-white rounded-xl shadow overflow-hidden"
           >
 
             <img
               src={news.featuredImage}
               alt={news.title}
-              className="w-full max-w-full h-40 object-cover group-hover:scale-105 transition"
+              className="w-full h-40 object-cover"
             />
 
             <div className="p-3 space-y-2">
