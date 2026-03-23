@@ -1,79 +1,104 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+export default function PanchangPage() {
+  const today = new Date();
 
-interface PanchangData {
-  tithi: string;
-  nakshatra: string;
-  yoga: string;
-  karana: string;
-  sunrise: string;
-  sunset: string;
-}
+  const [currentDate, setCurrentDate] = useState(today);
 
-export default function Panchang() {
-  const [data, setData] = useState<PanchangData | null>(null);
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-  const fetchPanchang = async () => {
-    try {
-      // 🔥 Example FREE API (replace with your key if needed)
-      const res = await fetch(
-        "https://api.allorigins.win/raw?url=https://api.drikpanchang.com/v1/panchang?date=today"
-      );
+  // 📅 Month days generate
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
 
-      const result = await res.json();
+  const days: (number | null)[] = [];
 
-      // 👉 API structure ke hisab se map karna padega
-      setData({
-        tithi: result.tithi?.name || "N/A",
-        nakshatra: result.nakshatra?.name || "N/A",
-        yoga: result.yoga?.name || "N/A",
-        karana: result.karana?.name || "N/A",
-        sunrise: result.sunrise || "N/A",
-        sunset: result.sunset || "N/A",
-      });
+  // empty slots
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
 
-    } catch (err) {
-      console.error("Panchang fetch error:", err);
+  // actual dates
+  for (let i = 1; i <= lastDate; i++) {
+    days.push(i);
+  }
 
-      // fallback data
-      setData({
-        tithi: "पूर्णिमा",
-        nakshatra: "रोहिणी",
-        yoga: "शुभ",
-        karana: "बव",
-        sunrise: "06:20 AM",
-        sunset: "06:10 PM",
-      });
-    }
+  // 🪔 Dummy Panchang (later API se replace kar sakta hai)
+  const panchang = {
+    tithi: "Ekadashi",
+    nakshatra: "Rohini",
+    yoga: "Siddhi",
+    karan: "Bava",
+    sunrise: "06:15 AM",
+    sunset: "06:25 PM",
   };
 
-  useEffect(() => {
-    fetchPanchang();
-  }, []);
+  const changeMonth = (dir: number) => {
+    setCurrentDate(new Date(year, month + dir, 1));
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-     
+    <div className="p-4 space-y-6">
 
-      <div className="p-4">
-        <h1 className="text-xl font-bold mb-4">
-          🪔 Panchang Today
-        </h1>
+      {/* 🪔 Panchang */}
+      <div className="bg-orange-50 p-4 rounded-xl shadow">
+        <h2 className="text-lg font-bold mb-2">🪔 Today Panchang</h2>
 
-        {data ? (
-          <div className="bg-white shadow rounded p-4 space-y-2">
-            <p>📅 तिथि: <b>{data.tithi}</b></p>
-            <p>🌟 नक्षत्र: <b>{data.nakshatra}</b></p>
-            <p>🧘 योग: <b>{data.yoga}</b></p>
-            <p>🔄 करण: <b>{data.karana}</b></p>
-            <p>🌅 सूर्योदय: <b>{data.sunrise}</b></p>
-            <p>🌇 सूर्यास्त: <b>{data.sunset}</b></p>
-          </div>
-        ) : (
-          <p>Loading Panchang...</p>
-        )}
+        <p>📅 Tithi: {panchang.tithi}</p>
+        <p>🌟 Nakshatra: {panchang.nakshatra}</p>
+        <p>🧘 Yoga: {panchang.yoga}</p>
+        <p>🔥 Karan: {panchang.karan}</p>
+        <p>🌅 Sunrise: {panchang.sunrise}</p>
+        <p>🌇 Sunset: {panchang.sunset}</p>
+      </div>
+
+      {/* 📅 Calendar */}
+      <div className="bg-white p-4 rounded-xl shadow">
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <button onClick={() => changeMonth(-1)}>⬅</button>
+          <h2 className="font-bold">
+            {currentDate.toLocaleString("default", {
+              month: "long",
+              year: "numeric",
+            })}
+          </h2>
+          <button onClick={() => changeMonth(1)}>➡</button>
+        </div>
+
+        {/* Days */}
+        <div className="grid grid-cols-7 text-center font-semibold mb-2">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+            <div key={d}>{d}</div>
+          ))}
+        </div>
+
+        {/* Dates */}
+        <div className="grid grid-cols-7 gap-2 text-center">
+          {days.map((d, i) => {
+            const isToday =
+              d === today.getDate() &&
+              month === today.getMonth() &&
+              year === today.getFullYear();
+
+            return (
+              <div
+                key={i}
+                className={`p-2 rounded-lg ${
+                  isToday
+                    ? "bg-red-500 text-white font-bold"
+                    : "bg-gray-100"
+                }`}
+              >
+                {d || ""}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

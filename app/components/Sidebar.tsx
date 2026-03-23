@@ -2,18 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { MapPin } from "lucide-react"; // 🔥 better icon
 
 export default function Sidebar({ isOpen, setIsOpen }: any) {
   const pathname = usePathname();
 
   const links = [
+    { name: "Panna & Satna", href: "/panna", icon: <MapPin size={18} /> },
     { name: "Home", href: "/", icon: "🏠" },
     { name: "India", href: "/india", icon: "🇮🇳" },
-    { name: "World", href: "/world", icon: "🌍" },
+    { name: "World", href: "/World", icon: "🌍" }, // ⚠️ small fix (lowercase)
     { name: "Sports", href: "/sports", icon: "🏏" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },
-    { name: "Submit", href: "/submit", icon: "📤" },
+    { name: "Submit", href: "/submit-news", icon: "📤" },
     { name: "Cricket", href: "/cricket", icon: "🔴" },
     { name: "Panchang", href: "/panchang", icon: "🪔" },
   ];
@@ -33,20 +35,17 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
         bg-gradient-to-b from-red-700 to-red-900 text-white
         transform transition-transform duration-300
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        `}
+        flex flex-col`}
       >
-        {/* 🔝 TOP HEADER */}
+        {/* 🔝 HEADER */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-red-500">
-          
-          {/* BRAND */}
           <div className="flex items-center gap-2">
             <span className="text-2xl">⭐</span>
-            <h2 className="text-lg font-bold">
+            <h2 className="text-lg font-bold tracking-wide">
               STAR NEWS
             </h2>
           </div>
 
-          {/* ❌ CLOSE BUTTON (mobile only) */}
           <button
             onClick={() => setIsOpen(false)}
             className="md:hidden text-2xl font-bold"
@@ -55,8 +54,8 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
           </button>
         </div>
 
-        {/* NAV LINKS */}
-        <nav className="flex flex-col gap-1 p-3">
+        {/* NAV */}
+        <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
           {links.map((link) => {
             const active = pathname === link.href;
 
@@ -68,11 +67,13 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
                 className={`flex items-center gap-3 px-3 py-2 rounded-md transition font-medium
                 ${
                   active
-                    ? "bg-white text-red-700 font-bold"
+                    ? "bg-white text-red-700 font-bold shadow"
                     : "hover:bg-red-800"
                 }`}
               >
-                <span>{link.icon}</span>
+                <span className="text-lg flex items-center">
+                  {link.icon}
+                </span>
                 <span>{link.name}</span>
               </Link>
             );
@@ -80,7 +81,7 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
         </nav>
 
         {/* FOOTER */}
-        <div className="mt-auto p-4 text-xs text-red-200 border-t border-red-500">
+        <div className="p-4 text-xs text-red-200 border-t border-red-500">
           © 2026 STAR NEWS
         </div>
       </aside>

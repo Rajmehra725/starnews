@@ -2,72 +2,95 @@
 
 import { useEffect, useState } from "react";
 
-type NewsSource = {
-  id: string;
-  name: string;
+type News = {
+  article_id: string;
+  title: string;
   description: string;
-  category: string;
-  language: string;
-  country: string;
-  url: string;
+  image_url: string;
+  source_name: string;
+  pubDate: string;
+  link: string;
 };
 
-export default function WorldNewsSourcesPage() {
-  const [sources, setSources] = useState<NewsSource[]>([]);
+export default function WorldPage() {
+  const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const API_KEY = "pub_79d78609851c446da9885589b524e7ef";
 
   useEffect(() => {
-    const fetchSources = async () => {
-      try {
-        const res = await fetch(
-          "https://newsdata.io/api/1/sources?country=IN&apikey=pub_79d78609851c446da9885589b524e7ef"
-        );
-        const data = await res.json();
-        if (data && data.results) {
-          // Filter only world category sources
-          const worldSources = data.results.filter(
-            (item: NewsSource) => item.category === "world"
-          );
-          setSources(worldSources);
-        } else {
-          setError("No sources found");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to fetch sources");
-      } finally {
+    fetch(
+      `https://newsdata.io/api/1/news?apikey=${API_KEY}&category=world&language=en`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setNews(data.results || []);
         setLoading(false);
-      }
-    };
-
-    fetchSources();
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
-  if (loading) return <p className="p-4 text-gray-500">Loading world news sources...</p>;
-  if (error) return <p className="p-4 text-red-500">{error}</p>;
-
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Star News - World News Sources</h1>
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {sources.map((source) => (
-          <a
-            key={source.id}
-            href={source.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border rounded-lg p-3 hover:shadow-lg transition flex flex-col"
+    <div className="p-4 space-y-4">
+      
+      {/* 🔥 Heading */}
+      <h1 className="text-2xl font-bold border-l-4 border-red-500 pl-2">
+        🌍 World News
+      </h1>
+
+      {/* ⏳ Loading */}
+      {loading && <p className="text-gray-500">Loading news...</p>}
+
+      {/* ❌ No Data */}
+      {!loading && news.length === 0 && (
+        <p className="text-gray-500">No news available</p>
+      )}
+
+      {/* 📰 News Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {news.map((item) => (
+          <div
+            key={item.article_id}
+            className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition"
           >
-            <h2 className="text-lg font-semibold">{source.name}</h2>
-            <p className="text-sm text-gray-600 mt-1">{source.description}</p>
-            <span className="text-xs text-gray-400 mt-2 block">
-              Language: {source.language} | Country: {source.country}
-            </span>
-            <span className="text-xs text-gray-400 mt-1 block">
-              Category: {source.category}
-            </span>
-          </a>
+            {/* 🖼 Image */}
+            <img
+              src={item.image_url || "https://via.placeholder.com/400x250"}
+              alt={item.title}
+              className="w-full h-48 object-cover"
+            />
+
+            {/* 📄 Content */}
+            <div className="p-4 space-y-2">
+              <h2 className="font-semibold text-lg line-clamp-2">
+                {item.title}
+              </h2>
+
+              <p className="text-sm text-gray-600 line-clamp-3">
+                {item.description}
+              </p>
+
+              {/* 🏷 Meta */}
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{item.source_name}</span>
+                <span>
+                  {new Date(item.pubDate).toLocaleDateString()}
+                </span>
+              </div>
+
+              {/* 🔗 Link */}
+              <a
+                href={item.link}
+                target="_blank"
+                className="text-blue-600 text-sm font-medium"
+              >
+                Read More →
+              </a>
+            </div>
+          </div>
         ))}
       </div>
     </div>

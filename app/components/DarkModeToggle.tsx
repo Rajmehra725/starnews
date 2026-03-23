@@ -2,34 +2,40 @@
 
 import { useEffect, useState } from "react";
 
-export function DarkModeToggle() {
+export default function DarkModeToggle() {
   const [dark, setDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // 🔥 Load from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") {
-      document.documentElement.classList.add("dark");
+    setMounted(true);
+
+    const theme = localStorage.getItem("theme");
+
+    if (theme === "dark") {
       setDark(true);
+    } else {
+      setDark(false);
     }
   }, []);
 
-  // 🌙 Toggle Function
+  if (!mounted) return null;
+
   const toggleDark = () => {
     if (dark) {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
+      setDark(false);
     } else {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
+      setDark(true);
     }
-    setDark(!dark);
   };
 
   return (
     <button
       onClick={toggleDark}
-      className="bg-gray-200 dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded shadow hover:scale-105 transition"
+      className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-700 text-black dark:text-white"
     >
       {dark ? "☀️ Light" : "🌙 Dark"}
     </button>
