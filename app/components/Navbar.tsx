@@ -15,7 +15,13 @@ export default function Navbar({ setIsOpen }: any) {
         <div className="flex items-center gap-2">
           <button className="md:hidden text-xl" onClick={() => setIsOpen(true)}>☰</button>
           <Link href="/" className="flex items-center gap-2">
-            <Image src={logo} alt="Star News" width={100} height={100} className="rounded" />
+          <Image
+  src={logo}
+  alt="Star News"
+  width={40}      // or height
+  height={40}     // or width
+  style={{ width: "40px", height: "auto" }}  // maintain ratio
+/>
             <span className="hidden md:block font-bold text-lg">STAR NEWS</span>
           </Link>
         </div>
