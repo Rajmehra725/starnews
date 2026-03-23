@@ -3,7 +3,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
-
+import {
+Eye,
+Heart,
+Share2,
+MessageCircle,
+Clock,
+Flame,
+TrendingUp
+} from "lucide-react";
 // 🔌 SOCKET INIT
 const socket: Socket = io("https://starnewsbackend.onrender.com");
 
@@ -48,6 +56,27 @@ type SharePayload = {
 export default function NewsPage() {
   const [newsList, setNewsList] = useState<News[]>([]);
 
+  const timeAgo = (date: string) => {
+  const seconds = Math.floor(
+    (new Date().getTime() - new Date(date).getTime()) / 1000
+  );
+
+  const intervals: any = {
+    year: 31536000,
+    month: 2592000,
+    day: 86400,
+    hour: 3600,
+    minute: 60,
+  };
+
+  for (const i in intervals) {
+    const counter = Math.floor(seconds / intervals[i]);
+    if (counter > 0)
+      return `${counter} ${i}${counter > 1 ? "s" : ""} ago`;
+  }
+
+  return "Just now";
+};
   // 👤 VISITOR ID
   const getVisitorId = () => {
     if (typeof window === "undefined") return "";
@@ -167,133 +196,174 @@ export default function NewsPage() {
   const hero = newsList[0];
 
   return (
-   <div className="space-y-6">
+<div className="w-full max-w-[1400px] mx-auto px-2 md:px-4 lg:px-6 space-y-4">
 
-  {/* 🔴 HEADER TITLE */}
-  <div className="flex items-center justify-between">
-    <h1 className="text-2xl font-bold flex items-center gap-2">
-      📰 पन्ना स्टार न्यूज़
-      <span className="bg-red-600 text-white text-xs px-2 py-1 rounded animate-pulse">
-        LIVE
-      </span>
-    </h1>
-  </div>
+{/* HEADER */}
+<div className="flex items-center justify-between border-b pb-2">
+<h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+📰 पन्ना स्टार न्यूज़
+<span className="bg-red-600 text-white text-[10px] md:text-xs px-2 py-1 rounded animate-pulse">
+LIVE
+</span>
+</h1>
+</div>
 
-  {/* 🔥 HERO SECTION */}
-  {hero && (
-    <div className="grid md:grid-cols-3 gap-4">
+{/* HERO */}
+{hero && (
+<div
+onClick={() => handleView(hero._id)}
+className="relative rounded-xl overflow-hidden shadow cursor-pointer group"
+>
 
-      {/* BIG NEWS */}
-      <div
-        onClick={() => handleView(hero._id)}
-        className="md:col-span-2 relative rounded-xl overflow-hidden shadow-xl cursor-pointer group"
-      >
-        <img
-          src={hero.featuredImage}
-          className="w-full h-[320px] object-cover group-hover:scale-105 transition"
-        />
+<img
+src={hero.featuredImage}
+className="w-full h-[260px] md:h-[360px] lg:h-[480px] object-cover group-hover:scale-105 transition"
+/>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+<div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
 
-        <div className="absolute bottom-0 p-5 text-white">
-          <span className="bg-red-600 px-2 py-1 text-xs rounded">
-            BREAKING
-          </span>
+<div className="absolute bottom-0 p-4 md:p-6 text-white w-full">
 
-          <h2 className="text-xl md:text-2xl font-bold mt-2">
-            {hero.title}
-          </h2>
+<div className="flex gap-2">
+<span className="bg-red-600 px-2 py-1 text-xs rounded">
+BREAKING
+</span>
 
-          <p className="text-sm opacity-80 mt-1 line-clamp-2">
-            {hero.description}
-          </p>
+<span className="bg-black/60 px-2 py-1 text-xs rounded">
+LIVE
+</span>
+</div>
 
-          <div className="flex gap-4 text-xs mt-2">
-            <span>👁️ {hero.views}</span>
-            <span>❤️ {hero.likes}</span>
-          </div>
-        </div>
-      </div>
+<h2 className="text-lg md:text-2xl lg:text-3xl font-bold mt-2">
+{hero.title}
+</h2>
 
-      {/* SIDE NEWS */}
-      <div className="space-y-4">
-        {newsList.slice(1, 4).map((news) => (
-          <div
-            key={news._id}
-            onClick={() => handleView(news._id)}
-            className="flex gap-3 bg-white dark:bg-gray-900 p-2 rounded-lg shadow hover:shadow-md cursor-pointer"
-          >
-            <img
-              src={news.featuredImage}
-              className="w-24 h-20 object-cover rounded"
-            />
+<p className="text-sm md:text-base opacity-90 mt-2 line-clamp-2">
+{hero.description}
+</p>
 
-            <div className="flex-1">
-              <h3 className="text-sm font-semibold line-clamp-2">
-                {news.title}
-              </h3>
+{/* STATS */}
+<div className="flex items-center gap-4 text-xs">
 
-              <div className="text-xs text-gray-500 mt-1 flex gap-2">
-                <span>👁️ {news.views}</span>
-                <span>❤️ {news.likes}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )}
+<span className="flex items-center gap-1">
+<Eye size={14}/> {hero.views}
+</span>
 
-  {/* 📰 GRID NEWS BELOW */}
-  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+<button className="flex items-center gap-1 text-red-500">
+<Heart size={14}/> {hero.likes}
+</button>
 
-    {newsList.map((news) => (
-      <div
-        key={news._id}
-        onClick={() => handleView(news._id)}
-        className="bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-lg transition cursor-pointer"
-      >
-        <img
-          src={news.featuredImage}
-          className="w-full h-44 object-cover"
-        />
+<button className="flex items-center gap-1 text-green-600">
+<Share2 size={14}/> {hero.shares}
+</button>
 
-        <div className="p-3 space-y-2">
+<span className="flex items-center gap-1">
+<MessageCircle size={14}/> {hero.comments?.length}
+</span>
 
-          <h2 className="font-bold line-clamp-2">
-            {news.title}
-          </h2>
 
-          <div className="flex justify-between text-sm border-t pt-2">
-            <span>👁️ {news.views}</span>
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleLike(news._id);
-              }}
-              className="text-red-500"
-            >
-              ❤️ {news.likes}
-            </button>
-
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleShare(news);
-              }}
-              className="text-green-600"
-            >
-              🔗 {news.shares}
-            </button>
-          </div>
-
-        </div>
-      </div>
-    ))}
-
-  </div>
+<span className="text-xs opacity-80">
+{timeAgo(hero.createdAt)}
+</span>
 
 </div>
-  );
+
+</div>
+
+</div>
+)}
+
+{/* TITLE */}
+<div className="flex items-center justify-between mt-4">
+<div className="flex items-center gap-2">
+<div className="w-1 h-5 bg-red-600"></div>
+<h2 className="font-bold text-lg">Latest News</h2>
+</div>
+</div>
+
+{/* GRID */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+
+{newsList.slice(1).map((news, index) => (
+<div
+key={news._id}
+onClick={() => handleView(news._id)}
+className="bg-white dark:bg-gray-900 rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden group"
+>
+
+{/* IMAGE */}
+<div className="relative">
+
+<img
+src={news.featuredImage}
+className="w-full h-40 md:h-44 object-cover group-hover:scale-105 transition"
+/>
+
+{index < 3 && (
+<span className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
+TRENDING
+</span>
+)}
+
+</div>
+
+{/* CONTENT */}
+<div className="p-3 space-y-2">
+
+<h2 className="font-semibold text-sm md:text-base line-clamp-2">
+{news.title}
+</h2>
+
+<p className="text-xs text-gray-500 line-clamp-2">
+{news.description}
+</p>
+
+{/* TIME */}
+<div className="text-xs text-gray-400">
+🕒 {timeAgo(news.createdAt)}
+</div>
+
+{/* ACTIONS */}
+<div className="flex items-center justify-between text-xs border-t pt-2">
+
+<span className="flex items-center gap-1">
+👁️ {news.views}
+</span>
+
+<button
+onClick={(e) => {
+e.stopPropagation();
+handleLike(news._id);
+}}
+className="flex items-center gap-1 text-red-500 hover:scale-110 transition"
+>
+❤️ {news.likes}
+</button>
+
+<button
+onClick={(e) => {
+e.stopPropagation();
+handleShare(news);
+}}
+className="flex items-center gap-1 text-green-600 hover:scale-110 transition"
+>
+🔗 {news.shares}
+</button>
+
+<span className="flex items-center gap-1">
+💬 {news.comments?.length || 0}
+</span>
+
+</div>
+
+</div>
+
+</div>
+))}
+
+</div>
+
+</div>
+);
 }

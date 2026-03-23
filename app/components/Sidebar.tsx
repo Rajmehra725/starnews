@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin } from "lucide-react"; // 🔥 better icon
+import { MapPin } from "lucide-react";
 
 export default function Sidebar({ isOpen, setIsOpen }: any) {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
     { name: "Panna & Satna", href: "/panna", icon: <MapPin size={18} /> },
     { name: "Home", href: "/", icon: "🏠" },
     { name: "India", href: "/india", icon: "🇮🇳" },
-    { name: "World", href: "/World", icon: "🌍" }, // ⚠️ small fix (lowercase)
+    { name: "World", href: "/world", icon: "🌍" },
     { name: "Sports", href: "/sports", icon: "🏏" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },
@@ -22,7 +22,7 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
 
   return (
     <>
-      {/* BACKDROP */}
+      {/* BACKDROP MOBILE */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 md:hidden"
@@ -31,13 +31,15 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
       )}
 
       <aside
-        className={`fixed md:static z-50 top-0 left-0 h-screen w-64 
+        className={`fixed md:sticky md:top-0 
+        top-0 left-0 h-screen w-64 
         bg-gradient-to-b from-red-700 to-red-900 text-white
         transform transition-transform duration-300
+        z-50
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         flex flex-col`}
       >
-        {/* 🔝 HEADER */}
+        {/* HEADER */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-red-500">
           <div className="flex items-center gap-2">
             <span className="text-2xl">⭐</span>

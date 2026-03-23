@@ -1,102 +1,61 @@
+// app/news/sports/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 
-type Source = {
-  id: string;
-  name: string;
-  url: string;
-  icon: string;
+type Article = {
+  title: string;
   description: string;
-  category: string[];
-  language: string;
-  country: string[];
+  url: string;
+  urlToImage: string | null;
+  publishedAt: string;
 };
 
-export default function PoliticsPage() {
-  const [sources, setSources] = useState<Source[]>([]);
+export default function SportsPage() {
+  const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_KEY = "pub_79d78609851c446da9885589b524e7ef";
-
   useEffect(() => {
-    fetch(
-      `https://newsdata.io/api/1/sources?apikey=${API_KEY}&country=IN`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        // 🏛️ Filter only politics sources
-        const politicsSources = (data.results || []).filter((item: any) =>
-          item.category?.includes("politics")
+    const fetchSports = async () => {
+      try {
+        const res = await fetch(
+          "https://newsapi.org/v2/top-headlines?country=us&category=sports&apiKey=293cf473654e4363b1f26f3c4d38676d"
         );
-
-        setSources(politicsSources);
-        setLoading(false);
-      })
-      .catch((err) => {
+        const data = await res.json();
+        setArticles(data.articles);
+      } catch (err) {
         console.error(err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchSports();
   }, []);
 
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+
   return (
-    <div className="p-4 space-y-4">
-
-      {/* 🔥 Heading */}
-      <h1 className="text-2xl font-bold border-l-4 border-blue-500 pl-2">
-        🏛️ Politics Sources (India)
-      </h1>
-
-      {/* ⏳ Loading */}
-      {loading && <p className="text-gray-500">Loading sources...</p>}
-
-      {/* ❌ No Data */}
-      {!loading && sources.length === 0 && (
-        <p className="text-gray-500">No politics sources found</p>
-      )}
-
-      {/* 📡 Sources Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {sources.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition space-y-3"
-          >
-            {/* 🖼 Logo */}
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold">Sports News</h1>
+      {articles.map((item, idx) => (
+        <div key={idx} className="border rounded shadow p-4">
+          {item.urlToImage && (
             <img
-              src={item.icon || "https://via.placeholder.com/100"}
-              alt={item.name}
-              className="w-16 h-16 object-contain"
+              src={item.urlToImage}
+              alt={item.title}
+              className="w-full h-48 object-cover rounded"
             />
-
-            {/* 🏷 Name */}
-            <h2 className="font-semibold text-lg">
-              {item.name}
-            </h2>
-
-            {/* 📝 Description */}
-            <p className="text-sm text-gray-600 line-clamp-3">
-              {item.description || "No description available"}
-            </p>
-
-            {/* 🌐 Meta */}
-            <div className="text-xs text-gray-500 space-y-1">
-              <p>Language: {item.language}</p>
-              <p>Country: {item.country?.join(", ")}</p>
-              <p>Category: {item.category?.join(", ")}</p>
-            </div>
-
-            {/* 🔗 Visit */}
-            <a
-              href={item.url}
-              target="_blank"
-              className="text-blue-600 text-sm font-medium"
-            >
-              Visit Source →
-            </a>
-          </div>
-        ))}
-      </div>
+          )}
+          <h2 className="text-xl font-semibold mt-2">{item.title}</h2>
+          <p className="text-gray-700 mt-1">{item.description}</p>
+          <a href={item.url} target="_blank" className="text-blue-600 mt-2 block">
+            Read More
+          </a>
+          <p className="text-sm text-gray-400 mt-1">
+            {new Date(item.publishedAt).toLocaleString()}
+          </p>
+        </div>
+      ))}
     </div>
   );
 }
