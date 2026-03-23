@@ -19,7 +19,7 @@ export default function SubmitNews() {
 
   // 📥 Fetch approved news
   const fetchApprovedNews = async () => {
-    const res = await fetch("http://localhost:5000/api/newsSubmit/approved");
+    const res = await fetch("https://starnewsbackend.onrender.com/api/newsSubmit/approved");
     const data = await res.json();
     setApprovedNews(data);
   };
@@ -33,7 +33,7 @@ export default function SubmitNews() {
     e.preventDefault();
     setLoading(true);
 
-    await fetch("http://localhost:5000/api/newsSubmit", {
+    await fetch("https://starnewsbackend.onrender.com/api/newsSubmit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
