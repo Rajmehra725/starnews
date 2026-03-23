@@ -6,7 +6,7 @@ import IndiaNewsPage from "./india/page";
 import EntertainmentPage from "./entertainment/page";
 import SportsNewsSourcesPage from "./sports/page";
 import WorldNewsSourcesPage from "./World/page";
-
+import MiniWeatherHorizontal from "./components/weather";
 export default function Home() {
   const categories = [
     { name: "🇮🇳 देश", link: "/india" },
@@ -25,6 +25,7 @@ export default function Home() {
       {/* PANNA */}
       <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
         <Header title="🔴 पन्ना टॉप खबर" link="/panna" />
+          <MiniWeatherHorizontal />
         <PannaSection />
       </section>
 
