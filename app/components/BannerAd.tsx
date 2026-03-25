@@ -29,7 +29,7 @@ export default function BannerAd() {
       {/* 🔥 MAIN WIDTH CONTROL */}
       <div className="
         w-full 
-        max-w-[400px]   /* mobile perfect width */
+        max-w-[380px]   /* mobile perfect width */
         sm:max-w-[600px] 
         md:max-w-[500px] 
         lg:max-w-[1000px]
@@ -50,7 +50,7 @@ export default function BannerAd() {
 
               <div className="relative w-full overflow-hidden rounded-md">
 
-                {/* ✅ PERFECT IMAGE */}
+                { /* ✅ PERFECT IMAGE */}
                 <img
                   src={
                     banner.image?.startsWith("http")
@@ -59,7 +59,7 @@ export default function BannerAd() {
                   }
                   className="
                     w-full 
-                    h-[70px]       /* mobile slim */
+                    h-[80px]       /* mobile slim */
                     sm:h-[60px]
                     md:h-[100px]
                     lg:h-[80px]
