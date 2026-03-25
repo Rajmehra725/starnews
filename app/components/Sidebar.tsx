@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin,TvIcon } from "lucide-react";
 
 export default function Sidebar({ isOpen, setIsOpen }: any) {
   const pathname = usePathname();
 
   const links = [
-    { name: "Panna & Satna", href: "/panna", icon: <MapPin size={18} /> },
+   
     { name: "Home", href: "/", icon: "🏠" },
+     { name: "Panna ", href: "/panna", icon: <MapPin size={18} /> },
+      { name: "Satna", href: "/satna", icon: <TvIcon size={18} /> },
     { name: "India", href: "/india", icon: "🇮🇳" },
-    { name: "World", href: "/World", icon: "🌍" },
     { name: "Sports", href: "/sports", icon: "🏏" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },

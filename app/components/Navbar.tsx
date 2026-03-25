@@ -2,50 +2,59 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../public/logo.jpeg";
-import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  Youtube,
+  Menu
+} from "lucide-react";
 
 export default function Navbar({ setIsOpen }: any) {
   return (
-    <header className="sticky top-0 z-50 w-full overflow-x-hidden shadow">
+    <header className="sticky top-0 z-50 w-full shadow">
 
       {/* TOP BAR */}
-      <div className="flex items-center justify-between px-2 py-2 md:px-4 bg-gradient-to-r from-red-700 to-red-600 text-white">
+      <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-red-700 to-red-600 text-white">
 
-        {/* LEFT: MENU + LOGO */}
+        {/* LEFT */}
         <div className="flex items-center gap-2">
-          <button className="md:hidden text-xl" onClick={() => setIsOpen(true)}>☰</button>
+          <button className="md:hidden" onClick={() => setIsOpen(true)}>
+            <Menu size={22} />
+          </button>
+
           <Link href="/" className="flex items-center gap-2">
-          <Image
-  src={logo}
-  alt="Star News"
-  width={40}      // or height
-  height={40}     // or width
-  style={{ width: "40px", height: "auto" }}  // maintain ratio
-/>
-            <span className="hidden md:block font-bold text-lg">STAR NEWS</span>
+            <Image
+              src={logo}
+              alt="Star News"
+              priority
+              className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+            />
+            <span className="font-bold text-sm sm:text-base md:text-lg">
+              STAR NEWS
+            </span>
           </Link>
         </div>
 
-        {/* RIGHT ICONS (Desktop only) */}
-        <div className="hidden md:flex items-center gap-2">
-          <a href="#" className="p-1"><Facebook size={16} /></a>
-          <a href="#" className="p-1"><Instagram size={16} /></a>
-          <a href="#" className="p-1"><Twitter size={16} /></a>
-          <a href="#" className="p-1"><Youtube size={16} /></a>
+        {/* RIGHT PROFESSIONAL ICONS */}
+        <div className="flex items-center gap-3">
+          <a href="#" className="hover:opacity-80 transition">
+            <Youtube size={24} />
+          </a>
+
+          <a href="#" className="hover:opacity-80 transition">
+            <Facebook size={24} />
+          </a>
+
+          <a href="#" className="hover:opacity-80 transition">
+            <Instagram size={24} />
+          </a>
+
         </div>
       </div>
 
-      {/* MOBILE ICONS BELOW */}
-      <div className="flex justify-center gap-4 bg-red-700 text-white py-1 md:hidden">
-        <a href="#"><Facebook size={16} /></a>
-        <a href="#"><Instagram size={16} /></a>
-        <a href="#"><Twitter size={16} /></a>
-        <a href="#"><Youtube size={16} /></a>
-      </div>
-
-      {/* BREAKING NEWS TICKER */}
-      <div className="bg-yellow-400 text-black text-xs w-full overflow-hidden">
-        <div className="inline-block whitespace-nowrap animate-marquee px-2 py-1">
+      {/* BREAKING */}
+      <div className="bg-yellow-400 text-black text-xs overflow-hidden">
+        <div className="whitespace-nowrap animate-marquee px-2 py-1">
           🔥 Breaking: India wins match | Heavy rain alert | New policy announced
         </div>
       </div>

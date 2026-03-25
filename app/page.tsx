@@ -5,12 +5,11 @@ import PannaSection from "./panna/page";
 import IndiaNewsPage from "./india/page";
 import EntertainmentPage from "./entertainment/page";
 import SportsNewsSourcesPage from "./sports/page";
-import WorldNewsSourcesPage from "./World/page";
+
 
 export default function Home() {
   const categories = [
     { name: "🇮🇳 देश", link: "/india" },
-    { name: "🌍 दुनिया", link: "/world" },
     { name: "🏏 खेल", link: "/sports" },
     { name: "🎬 मनोरंजन", link: "/entertainment" },
     { name: "🎥 वीडियो", link: "/video" },
@@ -58,9 +57,7 @@ export default function Home() {
         <SportsNewsSourcesPage />
       </Section>
 
-      <Section title="🌍 दुनिया" link="/world">
-        <WorldNewsSourcesPage />
-      </Section>
+     
 
     </div>
   );

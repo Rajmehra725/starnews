@@ -72,7 +72,7 @@ export default function BreakingNews() {
         .animate-marquee {
           display: inline-block;
           padding-left: 100%;
-          animation: marquee 25s linear infinite;
+          animation: marquee 40s linear infinite;
         }
 
         @keyframes marquee {
