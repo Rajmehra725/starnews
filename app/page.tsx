@@ -4,8 +4,8 @@ import Link from "next/link";
 import PannaSection from "./panna/page";
 import IndiaNewsPage from "./india/page";
 import EntertainmentPage from "./entertainment/page";
-import SportsNewsSourcesPage from "./sports/page";
 
+import BannerAd from "./components/BannerAd";
 
 export default function Home() {
   const categories = [
@@ -23,6 +23,7 @@ export default function Home() {
 
       {/* PANNA */}
       <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
+        <BannerAd />
         <Header title="🔴 पन्ना टॉप खबर" link="/panna" />
          
         <PannaSection />
@@ -51,10 +52,6 @@ export default function Home() {
 
       <Section title="🎬 मनोरंजन" link="/entertainment">
         <EntertainmentPage />
-      </Section>
-
-      <Section title="🏏 खेल" link="/sports">
-        <SportsNewsSourcesPage />
       </Section>
 
      

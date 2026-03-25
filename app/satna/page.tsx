@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
-
+import Link from "next/link";
 import {
   FaHeart,
   FaRegHeart,
@@ -153,10 +153,11 @@ export default function SatnaNewsPage() {
       </h1>
 
       {newsList.map(news => (
-        <div
-          key={news._id}
-          className="bg-white rounded-xl shadow overflow-hidden"
-        >
+        <div key={news._id}>
+          <Link
+            href={`/panna/${news._id}`}
+            className="bg-white rounded-xl shadow overflow-hidden block"
+          >
           {/* image */}
           <div
             className="relative"
@@ -260,6 +261,7 @@ export default function SatnaNewsPage() {
             </div>
 
           </div>
+</Link>
         </div>
       ))}
     </div>

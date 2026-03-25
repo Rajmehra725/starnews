@@ -1,4 +1,5 @@
 "use client";
+  import Link from "next/link";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -154,11 +155,12 @@ export default function NewsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
         {newsList.slice(1).map((news) => (
-          <div
-            key={news._id}
-            className="bg-white rounded-xl shadow overflow-hidden"
-          >
-
+          <div key={news._id}>
+            
+<Link
+  href={`/panna/${news._id}`}
+  className="bg-white rounded-xl shadow overflow-hidden block"
+>
             <img
               src={news.featuredImage}
               alt={news.title}
@@ -185,7 +187,7 @@ export default function NewsPage() {
               </div>
 
             </div>
-
+</Link>
           </div>
         ))}
 

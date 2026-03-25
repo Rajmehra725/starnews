@@ -37,27 +37,22 @@ export default function Navbar({ setIsOpen }: any) {
 
         {/* RIGHT PROFESSIONAL ICONS */}
         <div className="flex items-center gap-3">
-          <a href="#" className="hover:opacity-80 transition">
+          <a href="https://youtube.com/@starnewsnetworks88?si=HHAEJevcHq48Fdrh" className="hover:opacity-80 transition">
             <Youtube size={24} />
           </a>
 
-          <a href="#" className="hover:opacity-80 transition">
+          <a href="https://www.facebook.com/share/1CK1ZzzX1B/" className="hover:opacity-80 transition">
             <Facebook size={24} />
           </a>
 
-          <a href="#" className="hover:opacity-80 transition">
+          <a href="https://www.instagram.com/starnewsnetworks?igsh=NWw2cDhnbTllcWpv" className="hover:opacity-80 transition">
             <Instagram size={24} />
           </a>
 
         </div>
       </div>
 
-      {/* BREAKING */}
-      <div className="bg-yellow-400 text-black text-xs overflow-hidden">
-        <div className="whitespace-nowrap animate-marquee px-2 py-1">
-          🔥 Breaking: India wins match | Heavy rain alert | New policy announced
-        </div>
-      </div>
+    
 
       <style jsx>{`
         @keyframes marquee {
