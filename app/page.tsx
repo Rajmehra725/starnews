@@ -4,7 +4,6 @@ import Link from "next/link";
 import PannaSection from "./panna/page";
 import IndiaNewsPage from "./india/page";
 import EntertainmentPage from "./entertainment/page";
-
 import BannerAd from "./components/BannerAd";
 
 export default function Home() {
@@ -19,50 +18,71 @@ export default function Home() {
   ];
 
   return (
-    <div className="space-y-2 md:space-y-5">
+    <div className="w-full flex justify-center">
+      
+      {/* 🔥 MAIN CONTAINER */}
+      <div className="w-full max-w-[1200px] px-2 md:px-4 space-y-3 md:space-y-6">
 
-      {/* PANNA */}
-      <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
-        <BannerAd />
-        <Header title="🔴 पन्ना टॉप खबर" link="/panna" />
-         
-        <PannaSection />
-      </section>
-
-      {/* CATEGORY */}
-      <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
-        <Header title="📂 कैटेगरी" link="#" />
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1 md:gap-3">
-          {categories.map((item, i) => (
-            <Link
-              key={i}
-              href={item.link}
-              className="bg-gray-50 dark:bg-gray-800 p-2 text-xs md:text-sm rounded text-center"
-            >
-              {item.name}
-            </Link>
-          ))}
+        {/* 🔴 TOP BANNER */}
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[1000px]">
+            <BannerAd />
+          </div>
         </div>
-      </section>
 
-      <Section title="🇮🇳 देश" link="/india">
-        <IndiaNewsPage />
-      </Section>
+        {/* 📰 PANNA SECTION */}
+        <Section title="🔴 पन्ना टॉप खबर" link="/panna">
+          <PannaSection />
+        </Section>
 
-      <Section title="🎬 मनोरंजन" link="/entertainment">
-        <EntertainmentPage />
-      </Section>
+        {/* 📂 CATEGORY */}
+        <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
+          <Header title="📂 कैटेगरी" link="#" />
 
-     
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
+            {categories.map((item, i) => (
+              <Link
+                key={i}
+                href={item.link}
+                className="
+                  bg-gray-50 dark:bg-gray-800 
+                  p-2 md:p-3 
+                  text-xs md:text-sm 
+                  rounded-md 
+                  text-center 
+                  hover:bg-red-50 dark:hover:bg-gray-700
+                  transition
+                "
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+        </section>
 
+        {/* 🇮🇳 INDIA NEWS */}
+        <Section title="🇮🇳 देश" link="/india">
+          <IndiaNewsPage />
+        </Section>
+
+        {/* 🎬 ENTERTAINMENT */}
+        <Section title="🎬 मनोरंजन" link="/entertainment">
+          <EntertainmentPage />
+        </Section>
+
+      </div>
     </div>
   );
 }
 
 function Section({ title, link, children }: any) {
   return (
-    <section className="bg-white dark:bg-gray-900 shadow-sm md:shadow rounded-md md:rounded-xl p-2 md:p-4">
+    <section className="
+      bg-white dark:bg-gray-900 
+      shadow-sm md:shadow 
+      rounded-md md:rounded-xl 
+      p-2 md:p-4
+    ">
       <Header title={title} link={link} />
       {children}
     </section>
@@ -71,14 +91,23 @@ function Section({ title, link, children }: any) {
 
 function Header({ title, link }: any) {
   return (
-    <div className="flex justify-between items-center mb-2">
-      <h2 className="text-sm md:text-lg font-bold border-l-4 border-red-600 pl-2">
+    <div className="flex justify-between items-center mb-2 md:mb-3">
+      <h2 className="
+        text-sm md:text-lg 
+        font-bold 
+        border-l-4 border-red-600 
+        pl-2
+      ">
         {title}
       </h2>
 
       <Link
         href={link}
-        className="text-[10px] md:text-sm text-red-600"
+        className="
+          text-[10px] md:text-sm 
+          text-red-600 
+          hover:underline
+        "
       >
         और देखें
       </Link>
