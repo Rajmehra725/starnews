@@ -29,10 +29,10 @@ export default function BannerAd() {
       {/* 🔥 MAIN WIDTH CONTROL */}
       <div className="
         w-full 
-        max-w-[380px]   /* mobile perfect width */
-        sm:max-w-[600px] 
-        md:max-w-[500px] 
-        lg:max-w-[1000px]
+        max-w-[300px]   /* mobile perfect width */
+        sm:max-w-[300px] 
+        md:max-w-[300px] 
+        lg:max-w-[300px]
       ">
 
         <div className="text-[10px] text-gray-500 mb-1 px-1">
@@ -59,10 +59,10 @@ export default function BannerAd() {
                   }
                   className="
                     w-full 
-                    h-[80px]       /* mobile slim */
-                    sm:h-[60px]
+                    h-[100px]       /* mobile slim */
+                    sm:h-[100px]
                     md:h-[100px]
-                    lg:h-[80px]
+                    lg:h-[100px]
                     object-cover
                   "
                 />
