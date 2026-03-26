@@ -13,7 +13,6 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
      { name: "Panna ", href: "/panna", icon: <MapPin size={18} /> },
       { name: "Satna", href: "/satna", icon: <TvIcon size={18} /> },
     { name: "India", href: "/india", icon: "🇮🇳" },
-    { name: "Sports", href: "/sports", icon: "🏏" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },
     { name: "Submit", href: "/submit-news", icon: "📤" },
