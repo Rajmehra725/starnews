@@ -26,13 +26,13 @@ export default function BannerAd() {
   return (
     <div className="w-full flex justify-center">
 
-      {/* 🔥 MAIN WIDTH CONTROL */}
+      {/* ✅ MOBILE FIXED / DESKTOP FULL */}
       <div className="
-        w-full 
-        max-w-[300px]   /* mobile perfect width */
-        sm:max-w-[300px] 
-        md:max-w-[300px] 
-        lg:max-w-[300px]
+        w-full
+        max-w-[300px]   /* mobile same */
+        sm:max-w-[300px]
+        md:max-w-[500px]  /* tablet thoda bada */
+        lg:max-w-full     /* desktop full width */
       ">
 
         <div className="text-[10px] text-gray-500 mb-1 px-1">
@@ -47,10 +47,9 @@ export default function BannerAd() {
         >
           {banners.map((banner) => (
             <SwiperSlide key={banner._id}>
-
               <div className="relative w-full overflow-hidden rounded-md">
 
-                { /* ✅ PERFECT IMAGE */}
+                {/* ✅ IMAGE RESPONSIVE */}
                 <img
                   src={
                     banner.image?.startsWith("http")
@@ -59,10 +58,9 @@ export default function BannerAd() {
                   }
                   className="
                     w-full 
-                    h-[100px]       /* mobile slim */
-                    sm:h-[100px]
-                    md:h-[100px]
-                    lg:h-[100px]
+                    h-[100px]       /* mobile */
+                    md:h-[140px]    /* tablet */
+                    lg:h-[200px]    /* desktop */
                     object-cover
                   "
                 />
@@ -88,7 +86,6 @@ export default function BannerAd() {
                 </div>
 
               </div>
-
             </SwiperSlide>
           ))}
         </Swiper>
