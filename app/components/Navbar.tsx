@@ -30,7 +30,7 @@ export default function Navbar({ setIsOpen }: any) {
               className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
             />
             <span className="font-bold text-sm sm:text-base md:text-lg">
-              STAR NEWS
+              STAR NEWS Networks
             </span>
           </Link>
         </div>

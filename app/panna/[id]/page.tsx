@@ -34,7 +34,7 @@ export default function NewsDetailPage() {
   const [text, setText] = useState("");
   const [visitorId, setVisitorId] = useState("");
   const [loading, setLoading] = useState(true);
-
+const [showAll, setShowAll] = useState(false);
   // 🔥 AUTO VISITOR ID
   useEffect(() => {
     let vid = localStorage.getItem("visitorId");
@@ -105,18 +105,27 @@ export default function NewsDetailPage() {
 
   // 🔁 SHARE BUTTON
   const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: news?.title,
-        text: news?.description,
-        url: window.location.href,
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Link copied!");
-    }
-  };
+  const shareText = `
+${news?.title}
 
+${news?.description}
+
+${news?.content?.slice(0, 150)}...
+
+Read more: ${window.location.href}
+  `;
+
+  if (navigator.share) {
+    navigator.share({
+      title: news?.title,
+      text: shareText,
+      url: window.location.href,
+    });
+  } else {
+    navigator.clipboard.writeText(shareText);
+    alert("News copied with full content!");
+  }
+};
   // 💬 COMMENT POST
   const handleComment = async () => {
     if (!text) return;
@@ -211,16 +220,18 @@ export default function NewsDetailPage() {
           className="w-full border p-2 rounded mb-2"
         />
 
-        <button
-          onClick={handleComment}
-          className="bg-red-600 text-white px-4 py-2 rounded w-full"
-        >
-          Post Comment
-        </button>
+     {comments.length > 5 && (
+  <button
+    onClick={() => setShowAll(!showAll)}
+    className="text-red-600 text-sm mt-2"
+  >
+    {showAll ? "Show Less" : "View More Comments"}
+  </button>
+)}
 
         {/* LIST */}
         <div className="mt-4 space-y-4">
-          {comments.map((c, i) => (
+{(showAll ? comments : comments.slice(0, 5)).map((c, i) => (
             <div key={i} className="flex gap-3 border-b pb-3">
 
               <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm">
