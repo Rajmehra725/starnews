@@ -114,60 +114,66 @@ export default function NewsDetailPage() {
 
   // ✅ FIXED SHARE (NO DOUBLE LINK + IMAGE SUPPORT)
   const handleShare = async () => {
-    if (!news) return;
+  if (!news) return;
 
-    const url = window.location.href;
+  // ✅ always exact current page URL (including id)
+  const url = window.location.origin + window.location.pathname;
 
-    // ❌ FIX: duplicate link removed
-    const shareText = `${news.title}
+  // ✅ FULL content (no slice)
+  const shareText = `${news.title}
 
 ${news.description}
 
-${news.content?.slice(0, 350)}...`;
+${news.content}`;
 
-    try {
-      const imageUrl = news.featuredImage || news.images?.[0];
+  try {
+    const imageUrl = news.featuredImage || news.images?.[0];
 
-      // ✅ try native share with image
-      if (navigator.canShare && imageUrl) {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
+    // ✅ Native share with image
+    if (navigator.canShare && imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
 
-          const file = new File([blob], "news.jpg", {
-            type: blob.type || "image/jpeg",
-          });
+        const file = new File([blob], "news.jpg", {
+          type: blob.type || "image/jpeg",
+        });
 
-          const shareData: any = {
-            title: news.title,
-            text: shareText,
-            files: [file],
-          };
+        const shareData: any = {
+          title: news.title,
+          text: shareText,
+          url: url, // ✅ important (adds link properly)
+          files: [file],
+        };
 
-          if (navigator.canShare(shareData)) {
-            await navigator.share(shareData);
-            return;
-          }
-        } catch {
-          console.log("Image fetch failed");
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
         }
+      } catch {
+        console.log("Image fetch failed");
       }
-
-      // ✅ fallback (WhatsApp with single link)
-      window.open(
-        `https://wa.me/?text=${encodeURIComponent(
-          shareText + "\n\n" + url
-        )}`,
-        "_blank"
-      );
-
-    } catch (err) {
-      console.error(err);
-      await navigator.clipboard.writeText(shareText + "\n\n" + url);
-      alert("News copied!");
     }
-  };
 
+    // ✅ WhatsApp fallback (full content + exact link)
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(
+        shareText + "\n\nRead more: " + url
+      )}`,
+      "_blank"
+    );
+
+  } catch (err) {
+    console.error(err);
+
+    // ✅ Clipboard fallback
+    await navigator.clipboard.writeText(
+      shareText + "\n\nRead more: " + url
+    );
+
+    alert("News copied!");
+  }
+};
   // comment
   const handleComment = async () => {
     if (!text) return;
