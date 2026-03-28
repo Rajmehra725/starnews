@@ -123,7 +123,7 @@ export default function NewsDetailPage() {
 
 ${news.description}
 
-${news.content?.slice(0, 150)}...`;
+${news.content?.slice(0, 350)}...`;
 
     try {
       const imageUrl = news.featuredImage || news.images?.[0];
