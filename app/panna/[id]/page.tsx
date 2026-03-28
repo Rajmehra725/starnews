@@ -116,15 +116,13 @@ export default function NewsDetailPage() {
   const handleShare = async () => {
   if (!news) return;
 
-  // ✅ always exact current page URL (including id)
+  // ✅ exact URL with id
   const url = window.location.origin + window.location.pathname;
 
-  // ✅ FULL content (no slice)
+  // ✅ content removed
   const shareText = `${news.title}
 
-${news.description}
-
-${news.content}`;
+${news.description}`;
 
   try {
     const imageUrl = news.featuredImage || news.images?.[0];
@@ -142,7 +140,7 @@ ${news.content}`;
         const shareData: any = {
           title: news.title,
           text: shareText,
-          url: url, // ✅ important (adds link properly)
+          url: url,
           files: [file],
         };
 
@@ -155,7 +153,7 @@ ${news.content}`;
       }
     }
 
-    // ✅ WhatsApp fallback (full content + exact link)
+    // ✅ WhatsApp fallback
     window.open(
       `https://wa.me/?text=${encodeURIComponent(
         shareText + "\n\nRead more: " + url
