@@ -157,26 +157,80 @@ export default function SatnaNewsPage() {
   };
 
   const handleShare = async (news: News) => {
-    const shareData = {
-      title: news.title,
-      text: news.description,
-      url: `${window.location.origin}/panna/${news._id}`
-    };
+  if (!news) return;
 
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(shareData.url);
-        alert("Link copied 👍");
+  // ✅ exact dynamic URL with id
+  const url = `${window.location.origin}/panna/${news._id}`;
+
+  // ✅ only title + description (content removed)
+  const shareText = `${news.title}
+
+${news.description}`;
+
+  try {
+    const imageUrl = news.featuredImage;
+
+    // ✅ Native share with image
+    if (navigator.canShare && imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+
+        const file = new File([blob], "news.jpg", {
+          type: blob.type || "image/jpeg",
+        });
+
+        const shareData: any = {
+          title: news.title,
+          text: shareText,
+          url: url,
+          files: [file],
+        };
+
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+
+          // ✅ update share count
+          await axios.post(
+            `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+          );
+
+          return;
+        }
+      } catch {
+        console.log("Image fetch failed");
       }
+    }
 
-      await axios.post(
-        `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-      );
-    } catch {}
-  };
+    // ✅ WhatsApp fallback (clean format)
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(
+        shareText + "\n\nRead more: " + url
+      )}`,
+      "_blank"
+    );
 
+    // ✅ update share count
+    await axios.post(
+      `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+    );
+
+  } catch (err) {
+    console.error(err);
+
+    // ✅ Clipboard fallback
+    await navigator.clipboard.writeText(
+      shareText + "\n\nRead more: " + url
+    );
+
+    alert("Link copied 👍");
+
+    // ✅ update share count
+    await axios.post(
+      `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+    );
+  }
+};
   const handleCopyLink = async (id: string) => {
     try {
       await navigator.clipboard.writeText(
