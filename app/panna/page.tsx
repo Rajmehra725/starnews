@@ -7,7 +7,6 @@ import Link from "next/link";
 import {
   FaHeart,
   FaRegHeart,
-  FaWhatsapp,
   FaRegComment,
   FaEye,
   FaCheckCircle,
@@ -15,6 +14,7 @@ import {
   FaRegBookmark
 } from "react-icons/fa";
 import { FaShareAlt } from "react-icons/fa";
+
 type Comment = {
   _id: string;
   text: string;
@@ -42,7 +42,6 @@ export default function SatnaNewsPage() {
   const [loading, setLoading] = useState(true);
 
   const [animateLike, setAnimateLike] = useState<string | null>(null);
-
   const viewedRef = useRef<Set<string>>(new Set());
 
   const visitorId =
@@ -56,6 +55,11 @@ export default function SatnaNewsPage() {
       localStorage.setItem("visitorId", visitorId);
     }
   }, []);
+
+  const isOldNews = (date: string) => {
+    const diff = new Date().getTime() - new Date(date).getTime();
+    return diff > 24 * 60 * 60 * 1000;
+  };
 
   const timeAgo = (date: string) => {
     const seconds = Math.floor(
@@ -145,176 +149,187 @@ export default function SatnaNewsPage() {
         `https://starnewsbackend.onrender.com/api/interactions/view/${id}`,
         { visitorId }
       );
-    } catch (err) {
-      console.log(err);
-    }
+    } catch {}
   };
 
   const handleSave = (id: string) => {
     setSaved(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
- const handleShare = async (news: News) => {
-  const shareData = {
-    title: news.title,
-    text: news.description,
-    url: `${window.location.origin}/panna/${news._id}`
+  const handleShare = async (news: News) => {
+    const shareData = {
+      title: news.title,
+      text: news.description,
+      url: `${window.location.origin}/panna/${news._id}`
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        alert("Link copied 👍");
+      }
+
+      await axios.post(
+        `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+      );
+    } catch {}
   };
 
-  try {
-    // Mobile / supported browsers
-    if (navigator.share) {
-      await navigator.share(shareData);
-    } else {
-      // Desktop fallback (copy link)
-      await navigator.clipboard.writeText(shareData.url);
-      alert("Link copied! Now you can share it 👍");
-    }
+  const handleCopyLink = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/panna/${id}`
+      );
+      alert("Link copied 👍");
+    } catch {}
+  };
 
-    // Backend share count update
-    await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-    );
-  } catch (err) {
-    console.log("Share cancelled or failed");
-  }
-};
+  const latestNews = newsList.filter(n => !isOldNews(n.createdAt));
+  const oldNews = newsList.filter(n => isOldNews(n.createdAt));
 
-  return (
-    <div className="max-w-6xl mx-auto px-3 py-4">
+  const renderCard = (news: News, isOld = false) => (
+    <div
+      key={news._id}
+      onMouseEnter={() => handleView(news._id)}
+      className={`rounded-2xl overflow-hidden border transition-all duration-300 group
+        ${isOld ? "bg-gray-50 opacity-80" : "bg-white hover:shadow-2xl hover:-translate-y-1"}
+      `}
+    >
+      <div
+        className="relative"
+        onDoubleClick={() => handleLike(news._id)}
+      >
+        <img
+          src={news.featuredImage || "/no-image.png"}
+          className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
+        />
 
-      {/* 🔴 BREAKING STRIP */}
-      <div className="bg-red-600 text-white text-xs px-3 py-1 mb-3 animate-pulse">
-        🔴 BREAKING: Latest updates from Panna & Satna
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+
+        {animateLike === news._id && (
+          <FaHeart className="absolute text-white text-7xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping" />
+        )}
+
+        {news.breaking && (
+          <span className="absolute top-3 left-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow">
+            🔴 BREAKING
+          </span>
+        )}
+
+        <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-black text-xs px-3 py-1 rounded-full font-semibold shadow">
+          {news.category || "LOCAL"}
+        </span>
       </div>
 
-      {/* 📰 HEADER */}
-      <div className="mb-6 border-b pb-3">
-        <h1 className="text-3xl font-extrabold text-red-600">
-          STAR NEWS
-        </h1>
+      <div className="p-4 space-y-3">
+        <h2 className="font-bold text-lg text-gray-900 line-clamp-2 flex items-center gap-2">
+          {news.title}
+          {news.verified && (
+            <FaCheckCircle className="text-blue-500 text-sm" />
+          )}
+        </h2>
 
-        <div className="flex gap-3 mt-2 text-xs text-gray-600 font-medium">
-          <span>🏠 Home</span>
-          <span>📍 Panna</span>
-          <span>📍 Satna</span>
-          <span>🔥 Breaking</span>
-          <span>📈 Trending</span>
+        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+          {news.description}
+        </p>
+
+        <div className="flex items-center gap-4 pt-3 border-t text-gray-500 text-sm">
+
+          <button onClick={() => handleLike(news._id)}>
+            {liked[news._id] ? (
+              <FaHeart className="text-red-500" />
+            ) : (
+              <FaRegHeart />
+            )}
+          </button>
+          <span>{news.likes}</span>
+
+          <div className="flex items-center gap-1">
+            <FaRegComment />
+            <span>{news.comments?.length}</span>
+          </div>
+
+          <button onClick={() => handleShare(news)}>
+            <FaShareAlt />
+          </button>
+
+          <button onClick={() => handleCopyLink(news._id)}>
+            📋
+          </button>
+
+          <button
+            onClick={() => handleSave(news._id)}
+            className="ml-auto"
+          >
+            {saved[news._id] ? <FaBookmark /> : <FaRegBookmark />}
+          </button>
+        </div>
+
+        <div className="flex justify-between text-xs text-gray-400">
+          <span>🕒 {timeAgo(news.createdAt)}</span>
+          <span className="flex items-center gap-1">
+            <FaEye />
+            {news.views}
+          </span>
+        </div>
+
+        <Link
+          href={`/panna/${news._id}`}
+          className="block text-center text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 py-2 rounded-lg hover:from-red-700 hover:to-red-600 transition"
+        >
+          Read Full Story
+        </Link>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+
+      {/* HEADER */}
+      <div className="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+          <h1 className="text-2xl font-extrabold text-red-600">
+            STAR NEWS
+          </h1>
+          <span className="text-sm text-gray-500">
+            Live • Panna & Satna
+          </span>
         </div>
       </div>
 
-      {/* GRID */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto px-4 py-6">
 
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-xl" />
-            ))
-          : newsList.map(news => (
-              <div
-                key={news._id}
-                onMouseEnter={() => handleView(news._id)}
-                className="bg-white rounded-xl border hover:shadow-xl transition duration-300 overflow-hidden group"
-              >
+        {/* BREAKING BAR */}
+        <div className="bg-red-600 text-white text-sm px-4 py-2 mb-6 rounded-lg animate-pulse">
+          🔴 Breaking News Updates
+        </div>
 
-                {/* IMAGE */}
-                <div
-                  className="relative"
-                  onDoubleClick={() => handleLike(news._id)}
-                >
-                  <img
-                    src={news.featuredImage || "/no-image.png"}
-                    onError={(e: any) => (e.target.src = "/no-image.png")}
-                    className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
-                  />
+        {/* LATEST */}
+        <h2 className="text-xl font-bold mb-4">🆕 Latest News</h2>
 
-                  {/* overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-64 bg-gray-200 animate-pulse rounded-xl" />
+              ))
+            : latestNews.map(n => renderCard(n))}
+        </div>
 
-                  {/* like animation */}
-                  {animateLike === news._id && (
-                    <FaHeart className="absolute text-white text-6xl md:text-8xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping" />
-                  )}
+        {/* OLD NEWS */}
+        {oldNews.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold mt-10 mb-4 text-gray-500">
+              📰 Old News (24h+)
+            </h2>
 
-                  {news.breaking && (
-                    <span className="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-1 rounded font-bold">
-                      BREAKING
-                    </span>
-                  )}
-
-                  <span className="absolute bottom-2 left-2 bg-white text-black text-[10px] px-2 py-1 rounded font-semibold shadow">
-                    {news.category || "LOCAL NEWS"}
-                  </span>
-                </div>
-
-                {/* CONTENT */}
-                <div className="p-3 space-y-2">
-
-                  <h2 className="font-bold text-base text-gray-900 line-clamp-2 flex items-center gap-1">
-                    {news.title}
-                    {news.verified && (
-                      <FaCheckCircle className="text-blue-500 text-xs" />
-                    )}
-                  </h2>
-
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {news.description}
-                  </p>
-
-                  {/* ACTIONS */}
-                  <div className="flex items-center gap-4 pt-3 border-t text-gray-500 text-sm">
-
-                    <button onClick={() => handleLike(news._id)}>
-                      {liked[news._id] ? (
-                        <FaHeart className="text-red-500" />
-                      ) : (
-                        <FaRegHeart />
-                      )}
-                    </button>
-                    <span>{news.likes}</span>
-
-                    <div className="flex items-center gap-1">
-                      <FaRegComment />
-                      <span>{news.comments?.length}</span>
-                    </div>
-
-                   <button onClick={() => handleShare(news)}>
-  <FaShareAlt className="text-gray-600 hover:text-black transition" />
-</button>
-
-                    <button
-                      onClick={() => handleSave(news._id)}
-                      className="ml-auto"
-                    >
-                      {saved[news._id] ? (
-                        <FaBookmark />
-                      ) : (
-                        <FaRegBookmark />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* FOOTER */}
-                  <div className="flex justify-between items-center text-xs text-gray-400 pt-2">
-                    <span>🕒 {timeAgo(news.createdAt)}</span>
-
-                    <span className="flex items-center gap-1">
-                      <FaEye />
-                      {news.views}
-                    </span>
-                  </div>
-
-                  {/* BUTTON */}
-                  <Link
-                    href={`/panna/${news._id}`}
-                    className="block text-center text-sm font-semibold text-white bg-red-600 py-2 rounded mt-2 hover:bg-red-700 transition"
-                  >
-                    Read Full Story
-                  </Link>
-
-                </div>
-              </div>
-            ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {oldNews.map(n => renderCard(n, true))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
