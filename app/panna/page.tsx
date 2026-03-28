@@ -157,12 +157,8 @@ export default function SatnaNewsPage() {
   };
 
   const handleShare = async (news: News) => {
-  if (!news) return;
-
-  // ✅ exact dynamic URL with id
   const url = `${window.location.origin}/panna/${news._id}`;
 
-  // ✅ only title + description (content removed)
   const shareText = `${news.title}
 
 ${news.description}`;
@@ -170,7 +166,7 @@ ${news.description}`;
   try {
     const imageUrl = news.featuredImage;
 
-    // ✅ Native share with image
+    // ✅ Try share with image (mobile support)
     if (navigator.canShare && imageUrl) {
       try {
         const response = await fetch(imageUrl);
@@ -190,10 +186,12 @@ ${news.description}`;
         if (navigator.canShare(shareData)) {
           await navigator.share(shareData);
 
-          // ✅ update share count
-          await axios.post(
-            `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-          );
+          // share count
+          try {
+            await axios.post(
+              `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+            );
+          } catch {}
 
           return;
         }
@@ -202,33 +200,28 @@ ${news.description}`;
       }
     }
 
-    // ✅ WhatsApp fallback (clean format)
+    // ✅ WhatsApp fallback (image preview via link)
     window.open(
       `https://wa.me/?text=${encodeURIComponent(
-        shareText + "\n\nRead more: " + url
+        shareText + "\n\n" + url
       )}`,
       "_blank"
     );
 
-    // ✅ update share count
-    await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-    );
+    try {
+      await axios.post(
+        `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+      );
+    } catch {}
 
   } catch (err) {
-    console.error(err);
+    console.log("Share failed");
 
-    // ✅ Clipboard fallback
-    await navigator.clipboard.writeText(
-      shareText + "\n\nRead more: " + url
-    );
-
-    alert("Link copied 👍");
-
-    // ✅ update share count
-    await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-    );
+    // ✅ Copy fallback
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("Link copied 👍");
+    } catch {}
   }
 };
   const handleCopyLink = async (id: string) => {
