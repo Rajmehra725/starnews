@@ -339,7 +339,7 @@ export default function SatnaNewsPage() {
     <div className="bg-gray-100 min-h-screen">
 
       {/* HEADER */}
-      <div className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <div className="bg-white shadow-sm border-b  top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-2xl font-extrabold text-red-600">
             STAR NEWS
