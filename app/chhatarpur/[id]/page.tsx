@@ -63,7 +63,7 @@ export default function NewsDetailPage() {
 
   const fetchNews = async () => {
     const res = await axios.get(
-      "https://starnewsbackend.onrender.com/api/satna"
+      "https://starnewsbackend.onrender.com/api/chhatarpur"
     );
     const found = res.data.find((n: NewsType) => n._id === id);
     setNews(found);

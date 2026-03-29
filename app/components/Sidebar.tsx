@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MapPin,TvIcon } from "lucide-react";
+import { MapPin,TvIcon,LocationEditIcon } from "lucide-react";
 
 export default function Sidebar({ isOpen, setIsOpen }: any) {
   const pathname = usePathname();
@@ -12,6 +12,7 @@ export default function Sidebar({ isOpen, setIsOpen }: any) {
     { name: "Home", href: "/", icon: "🏠" },
      { name: "Panna ", href: "/panna", icon: <MapPin size={18} /> },
       { name: "Satna", href: "/satna", icon: <TvIcon size={18} /> },
+       { name: "Chhatarpur", href: "/chhatarpur", icon: <LocationEditIcon size={18} /> },
     { name: "India", href: "/india", icon: "🇮🇳" },
     { name: "Entertainment", href: "/entertainment", icon: "🎬" },
     { name: "Video", href: "/video", icon: "🎥" },

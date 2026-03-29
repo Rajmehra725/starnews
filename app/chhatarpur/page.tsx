@@ -88,7 +88,7 @@ export default function SatnaNewsPage() {
   const fetchNews = async () => {
     setLoading(true);
     const res = await axios.get(
-      "https://starnewsbackend.onrender.com/api/satna"
+      "https://starnewsbackend.onrender.com/api/chhatarpur"
     );
     setNewsList(res.data);
     setLoading(false);
@@ -326,7 +326,7 @@ export default function SatnaNewsPage() {
         </div>
 
         <Link
-          href={`/satna/${news._id}`}
+          href={`/chhatarpur/${news._id}`}
           className="block text-center text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 py-2 rounded-lg hover:from-red-700 hover:to-red-600 transition"
         >
           Read Full Story
@@ -342,10 +342,10 @@ export default function SatnaNewsPage() {
       <div className="bg-white shadow-sm border-b  top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
           <h1 className="text-2xl font-extrabold text-red-600">
-            STAR NEWS Satna
+            STAR NEWS CHhatarpur
           </h1>
           <span className="text-sm text-gray-500">
-            Live • Panna & Satna
+            Live • Panna & Satna & Chhatarpur
           </span>
         </div>
       </div>

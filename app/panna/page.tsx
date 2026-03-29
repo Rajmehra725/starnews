@@ -221,14 +221,17 @@ export default function SatnaNewsPage() {
     }
   };
 
-  const handleCopyLink = async (id: string) => {
-    try {
-      await navigator.clipboard.writeText(
-        `${window.location.origin}/panna/${id}`
-      );
-      alert("Link copied 👍");
-    } catch {}
-  };
+  const handleCopyLink = async (id: string, title: string) => {
+  try {
+    const textToCopy = `${title}\n${window.location.origin}/panna/${id}`;
+
+    await navigator.clipboard.writeText(textToCopy);
+
+    alert("Title + Link copied 👍");
+  } catch (error) {
+    console.error("Copy failed", error);
+  }
+};
 
   const latestNews = newsList.filter(n => !isOldNews(n.createdAt));
   const oldNews = newsList.filter(n => isOldNews(n.createdAt))
@@ -305,7 +308,7 @@ export default function SatnaNewsPage() {
             <FaShareAlt />
           </button>
 
-          <button onClick={() => handleCopyLink(news._id)}>
+          <button onClick={() => handleCopyLink(news._id, news.title)}>
             📋
           </button>
 
