@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const url = `https://yourdomain.com/panna/${params.id}`;
+  const url = `https://starnewsbackend.onrender.com/panna/${params.id}`;
   const image = news.featuredImage || news.images?.[0];
 
   return {
