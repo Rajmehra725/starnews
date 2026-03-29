@@ -40,6 +40,8 @@ export default function SatnaNewsPage() {
   const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
   const [saved, setSaved] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(true);
+  const [showOldNews, setShowOldNews] = useState(false);
+  const [oldNewsFilter, setOldNewsFilter] = useState<string>("");
 
   const [animateLike, setAnimateLike] = useState<string | null>(null);
   const viewedRef = useRef<Set<string>>(new Set());
@@ -157,73 +159,68 @@ export default function SatnaNewsPage() {
   };
 
   const handleShare = async (news: News) => {
-  const url = `${window.location.origin}/panna/${news._id}`;
+    const url = `${window.location.origin}/panna/${news._id}`;
 
-  const shareText = `${news.title}
+    const shareText = `${news.title}\n\n${news.description}`;
 
-${news.description}`;
+    try {
+      const imageUrl = news.featuredImage;
 
-  try {
-    const imageUrl = news.featuredImage;
+      if (navigator.canShare && imageUrl) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
 
-    // ✅ Try share with image (mobile support)
-    if (navigator.canShare && imageUrl) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
+          const file = new File([blob], "news.jpg", {
+            type: blob.type || "image/jpeg",
+          });
 
-        const file = new File([blob], "news.jpg", {
-          type: blob.type || "image/jpeg",
-        });
+          const shareData: any = {
+            title: news.title,
+            text: shareText,
+            url: url,
+            files: [file],
+          };
 
-        const shareData: any = {
-          title: news.title,
-          text: shareText,
-          url: url,
-          files: [file],
-        };
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
 
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
+            try {
+              await axios.post(
+                `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+              );
+            } catch {}
 
-          // share count
-          try {
-            await axios.post(
-              `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-            );
-          } catch {}
-
-          return;
+            return;
+          }
+        } catch {
+          console.log("Image fetch failed");
         }
-      } catch {
-        console.log("Image fetch failed");
       }
-    }
 
-    // ✅ WhatsApp fallback (image preview via link)
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(
-        shareText + "\n\n" + url
-      )}`,
-      "_blank"
-    );
-
-    try {
-      await axios.post(
-        `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(
+          shareText + "\n\n" + url
+        )}`,
+        "_blank"
       );
-    } catch {}
 
-  } catch (err) {
-    console.log("Share failed");
+      try {
+        await axios.post(
+          `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
+        );
+      } catch {}
 
-    // ✅ Copy fallback
-    try {
-      await navigator.clipboard.writeText(url);
-      alert("Link copied 👍");
-    } catch {}
-  }
-};
+    } catch (err) {
+      console.log("Share failed");
+
+      try {
+        await navigator.clipboard.writeText(url);
+        alert("Link copied 👍");
+      } catch {}
+    }
+  };
+
   const handleCopyLink = async (id: string) => {
     try {
       await navigator.clipboard.writeText(
@@ -234,7 +231,13 @@ ${news.description}`;
   };
 
   const latestNews = newsList.filter(n => !isOldNews(n.createdAt));
-  const oldNews = newsList.filter(n => isOldNews(n.createdAt));
+  const oldNews = newsList.filter(n => isOldNews(n.createdAt))
+    .filter(n =>
+      oldNewsFilter
+        ? new Date(n.createdAt).toISOString().slice(0, 10) === oldNewsFilter
+        : true
+    )
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   const renderCard = (news: News, isOld = false) => (
     <div
@@ -367,15 +370,47 @@ ${news.description}`;
 
         {/* OLD NEWS */}
         {oldNews.length > 0 && (
-          <>
-            <h2 className="text-xl font-bold mt-10 mb-4 text-gray-500">
-              📰 Old News (24h+)
-            </h2>
+          <div className="mt-10">
+            <button
+              onClick={() => setShowOldNews(prev => !prev)}
+              className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+            >
+              {showOldNews ? "Hide Old News" : "Show Old News"}
+            </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {oldNews.map(n => renderCard(n, true))}
-            </div>
-          </>
+            {showOldNews && (
+              <>
+                <div className="mb-4 flex items-center gap-2">
+                  <label htmlFor="filterDate" className="text-gray-600 font-semibold">
+                    Filter by Date:
+                  </label>
+                  <input
+                    type="date"
+                    id="filterDate"
+                    value={oldNewsFilter}
+                    onChange={e => setOldNewsFilter(e.target.value)}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  {oldNewsFilter && (
+                    <button
+                      onClick={() => setOldNewsFilter("")}
+                      className="ml-2 text-sm text-red-500 hover:underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                <h2 className="text-xl font-bold mb-4 text-gray-500">
+                  📰 Old News (24h+)
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {oldNews.map(n => renderCard(n, true))}
+                </div>
+              </>
+            )}
+          </div>
         )}
       </div>
     </div>

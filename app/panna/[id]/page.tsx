@@ -19,6 +19,15 @@ interface CommentType {
   createdAt?: string;
 }
 
+interface SectionType {
+  _id: string;
+  heading: string;
+  content: string;
+  image?: string;
+  bgColor?: string;
+  textColor?: string;
+}
+
 interface NewsType {
   _id: string;
   title: string;
@@ -26,6 +35,7 @@ interface NewsType {
   description: string;
   featuredImage?: string;
   images?: string[];
+  sections?: SectionType[];
   createdAt: string;
   likes: number;
   shares: number;
@@ -42,7 +52,6 @@ export default function NewsDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
-  // visitor id
   useEffect(() => {
     let vid = localStorage.getItem("visitorId");
     if (!vid) {
@@ -52,7 +61,6 @@ export default function NewsDetailPage() {
     setVisitorId(vid);
   }, []);
 
-  // fetch news
   const fetchNews = async () => {
     const res = await axios.get(
       "https://starnewsbackend.onrender.com/api/news"
@@ -61,12 +69,10 @@ export default function NewsDetailPage() {
     setNews(found);
   };
 
-  // fetch comments
   const fetchComments = async () => {
     const res = await axios.get(
       `https://starnewsbackend.onrender.com/api/interactions/comment/${id}`
     );
-
     const data = res.data;
 
     if (Array.isArray(data)) setComments(data);
@@ -74,7 +80,6 @@ export default function NewsDetailPage() {
     else setComments([]);
   };
 
-  // ✅ FIXED SOCKET (ERROR FREE CLEANUP)
   useEffect(() => {
     socket = io("https://starnewsbackend.onrender.com");
 
@@ -93,7 +98,6 @@ export default function NewsDetailPage() {
     };
   }, [id]);
 
-  // load
   useEffect(() => {
     const load = async () => {
       setLoading(true);
@@ -104,7 +108,6 @@ export default function NewsDetailPage() {
     load();
   }, [id]);
 
-  // like
   const handleLike = async () => {
     await axios.post(
       `https://starnewsbackend.onrender.com/api/interactions/like/${id}`,
@@ -112,67 +115,53 @@ export default function NewsDetailPage() {
     );
   };
 
-  // ✅ FIXED SHARE (NO DOUBLE LINK + IMAGE SUPPORT)
   const handleShare = async () => {
-  if (!news) return;
+    if (!news) return;
 
-  // ✅ exact URL with id
-  const url = window.location.origin + window.location.pathname;
+    const url = window.location.origin + window.location.pathname;
+    const shareText = `${news.title}\n\n${news.description}`;
 
-  // ✅ content removed
-  const shareText = `${news.title}
+    try {
+      const imageUrl = news.featuredImage || news.images?.[0];
 
-${news.description}`;
+      if (navigator.canShare && imageUrl) {
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
 
-  try {
-    const imageUrl = news.featuredImage || news.images?.[0];
+          const file = new File([blob], "news.jpg", {
+            type: blob.type || "image/jpeg",
+          });
 
-    // ✅ Native share with image
-    if (navigator.canShare && imageUrl) {
-      try {
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
+          const shareData: any = {
+            title: news.title,
+            text: shareText,
+            url: url,
+            files: [file],
+          };
 
-        const file = new File([blob], "news.jpg", {
-          type: blob.type || "image/jpeg",
-        });
-
-        const shareData: any = {
-          title: news.title,
-          text: shareText,
-          url: url,
-          files: [file],
-        };
-
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return;
+          if (navigator.canShare(shareData)) {
+            await navigator.share(shareData);
+            return;
+          }
+        } catch {
+          console.log("Image fetch failed");
         }
-      } catch {
-        console.log("Image fetch failed");
       }
+
+      window.open(
+        `https://wa.me/?text=${encodeURIComponent(
+          shareText + "\n\nRead more: " + url
+        )}`,
+        "_blank"
+      );
+    } catch (err) {
+      console.error(err);
+      await navigator.clipboard.writeText(shareText + "\n\nRead more: " + url);
+      alert("News copied!");
     }
+  };
 
-    // ✅ WhatsApp fallback
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(
-        shareText + "\n\nRead more: " + url
-      )}`,
-      "_blank"
-    );
-
-  } catch (err) {
-    console.error(err);
-
-    // ✅ Clipboard fallback
-    await navigator.clipboard.writeText(
-      shareText + "\n\nRead more: " + url
-    );
-
-    alert("News copied!");
-  }
-};
-  // comment
   const handleComment = async () => {
     if (!text) return;
 
@@ -197,86 +186,116 @@ ${news.description}`;
   if (!news) return <p className="p-4">Not found</p>;
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-gray-100 min-h-screen font-sans">
 
-      <div className="bg-red-600 text-white px-4 py-3 flex justify-between">
-        <h1 className="text-xl font-bold">📰 STAR NEWS</h1>
-        <span className="bg-white text-red-600 px-2 py-1 text-xs rounded">
+      {/* HEADER */}
+      <div className="bg-red-700 text-white px-4 py-3 flex justify-between items-center shadow-md">
+        <h1 className="text-xl font-bold tracking-wide">📰 STAR NEWS</h1>
+        <span className="bg-white text-red-700 px-3 py-1 text-xs rounded font-medium">
           LIVE
         </span>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white p-4 mt-3 rounded shadow">
+      <div className="max-w-4xl mx-auto bg-white p-5 mt-4 rounded shadow-lg">
 
-        <div className="w-full rounded overflow-hidden">
-          <Swiper modules={[Autoplay]} autoplay={{ delay: 3000 }} loop>
+        {/* FEATURED IMAGE */}
+        {news.featuredImage && (
+          <img
+            src={news.featuredImage}
+            className="w-full h-[300px] md:h-[400px] object-cover rounded-md shadow-md"
+          />
+        )}
 
-            {news.featuredImage && (
-              <SwiperSlide>
-                <img
-                  src={news.featuredImage}
-                  className="w-full h-[220px] md:h-[350px] object-cover"
-                />
-              </SwiperSlide>
-            )}
-
-            {news.images?.map((img, index) => (
-              <SwiperSlide key={index}>
-                <img
-                  src={img}
-                  className="w-full h-[220px] md:h-[350px] object-cover"
-                />
-              </SwiperSlide>
-            ))}
-
-          </Swiper>
-        </div>
-
-        <h1 className="text-2xl font-bold mt-4">{news.title}</h1>
-
-        <p className="text-sm text-gray-500">
+        {/* TITLE + DATE */}
+        <h1 className="text-3xl md:text-4xl font-extrabold mt-4 text-gray-900 leading-tight">
+          {news.title}
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">
           {new Date(news.createdAt).toLocaleString()}
         </p>
 
-        <p className="mt-4 text-red-800 font-semibold leading-relaxed">
+        {/* DESCRIPTION */}
+        <p className="mt-4 text-red-700 font-semibold text-lg md:text-xl leading-relaxed border-l-4 border-red-700 pl-3">
           {news.description}
         </p>
 
-        <p className="mt-4 text-gray-800 leading-relaxed text-justify">
+        {/* CONTENT */}
+        <p className="mt-4 text-gray-800 leading-relaxed text-justify text-base md:text-lg">
           {news.content}
         </p>
 
-        <div className="flex justify-between items-center border-y py-2 mt-3">
+        {/* IMAGES SLIDER */}
+        {news.images && news.images.length > 0 && (
+          <div className="w-full rounded overflow-hidden mt-6 border-t pt-4">
+            <Swiper modules={[Autoplay]} autoplay={{ delay: 3000 }} loop>
+              {news.images.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={img}
+                    className="w-full h-[220px] md:h-[350px] object-cover rounded-md shadow"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        )}
+
+        {/* SECTIONS */}
+        {news.sections &&
+          news.sections.map((sec) => (
+            <div
+              key={sec._id}
+              className="mt-6 p-5 rounded-lg shadow-inner"
+              style={{ backgroundColor: sec.bgColor || "#f9f9f9", color: sec.textColor || "#000" }}
+            >
+              {sec.heading && (
+                <h2 className="font-bold text-xl md:text-2xl mb-3">
+                  {sec.heading}
+                </h2>
+              )}
+              {sec.image && (
+                <img
+                  src={sec.image}
+                  className="w-full h-[200px] object-cover rounded mb-3 shadow"
+                />
+              )}
+              <p className="text-gray-900 text-base md:text-lg">{sec.content}</p>
+            </div>
+          ))}
+
+        {/* LIKE / VIEW / SHARE / COMMENTS */}
+        <div className="flex justify-between items-center border-t border-b py-3 mt-6 text-gray-700">
 
           <button
             onClick={handleLike}
-            className="flex items-center gap-1 text-red-500"
+            className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-all font-medium"
           >
-            <Heart size={18}/> {news.likes}
+            <Heart size={20}/> {news.likes}
           </button>
 
-          <span className="flex items-center gap-1">
-            <Eye size={18}/> {news.views}
+          <span className="flex items-center gap-2">
+            <Eye size={20}/> {news.views}
           </span>
 
           <button
             onClick={handleShare}
-            className="flex items-center gap-1 text-green-600"
+            className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-all font-medium"
           >
-            <Share2 size={18}/> Share
+            <Share2 size={20}/> Share
           </button>
 
-          <span className="flex items-center gap-1">
-            <MessageCircle size={18}/> {comments.length}
+          <span className="flex items-center gap-2">
+            <MessageCircle size={20}/> {comments.length}
           </span>
 
         </div>
 
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white mt-4 p-4 rounded shadow">
+      {/* COMMENTS */}
+      <div className="max-w-4xl mx-auto bg-white mt-5 p-5 rounded shadow-lg">
 
-        <h2 className="font-semibold text-lg mb-3">
+        <h2 className="font-semibold text-lg md:text-xl mb-4">
           💬 Comments ({comments.length})
         </h2>
 
@@ -284,12 +303,12 @@ ${news.description}`;
           placeholder="Write comment..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="w-full border p-2 rounded mb-2"
+          className="w-full border p-3 rounded mb-3 text-base md:text-lg focus:outline-none focus:ring-2 focus:ring-red-700"
         />
 
         <button
           onClick={handleComment}
-          className="bg-red-600 text-white px-4 py-2 rounded text-sm"
+          className="bg-red-700 text-white px-5 py-2 rounded text-base md:text-lg font-semibold hover:bg-red-800 transition"
         >
           Post Comment
         </button>
@@ -297,7 +316,7 @@ ${news.description}`;
         {comments.length > 5 && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="text-red-600 text-sm mt-2 ml-3"
+            className="text-red-700 text-sm mt-3 ml-2 hover:underline"
           >
             {showAll ? "Show Less" : "View More Comments"}
           </button>
@@ -307,13 +326,13 @@ ${news.description}`;
           {(showAll ? comments : comments.slice(0, 5)).map((c, i) => (
             <div key={i} className="flex gap-3 border-b pb-3">
 
-              <div className="w-8 h-8 rounded-full bg-red-600 text-white flex items-center justify-center text-sm">
+              <div className="w-10 h-10 rounded-full bg-red-700 text-white flex items-center justify-center text-sm md:text-base font-bold">
                 {c.visitorId?.charAt(0).toUpperCase()}
               </div>
 
-              <div>
-                <p className="text-sm font-semibold">User</p>
-                <p>{c.text}</p>
+              <div className="flex-1">
+                <p className="text-sm md:text-base font-semibold text-gray-800">User</p>
+                <p className="text-gray-700">{c.text}</p>
                 <p className="text-xs text-gray-400">
                   {c.createdAt
                     ? new Date(c.createdAt).toLocaleString()
