@@ -221,13 +221,13 @@ export default function SatnaNewsPage() {
     }
   };
 
-  const handleCopyLink = async (id: string, title: string) => {
+  const handleCopyLink = async (id: string) => {
   try {
-    const textToCopy = `${title}\n${window.location.origin}/panna/${id}`;
+    const link = `${window.location.origin}/panna/${id}`;
 
-    await navigator.clipboard.writeText(textToCopy);
+    await navigator.clipboard.writeText(link);
 
-    alert("Title + Link copied 👍");
+    alert("Link copied 👍 (Preview will show in WhatsApp)");
   } catch (error) {
     console.error("Copy failed", error);
   }
@@ -308,7 +308,7 @@ export default function SatnaNewsPage() {
             <FaShareAlt />
           </button>
 
-          <button onClick={() => handleCopyLink(news._id, news.title)}>
+          <button onClick={() => handleCopyLink(news._id)}>
             📋
           </button>
 
