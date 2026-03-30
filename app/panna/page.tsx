@@ -4,11 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
 import Link from "next/link";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/autoplay";
-
-import { Autoplay } from "swiper/modules";
 import {
   FaHeart,
   FaRegHeart,
@@ -394,68 +389,49 @@ useEffect(() => {
         </div>
 
         {/* OLD NEWS */}
-     {oldNews.length > 0 && (
-  <div className="mt-10">
-    <button
-      onClick={() => setShowOldNews(prev => !prev)}
-      className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-    >
-      {showOldNews ? "Hide Old News" : "Show Old News"}
-    </button>
-
-    {showOldNews && (
-      <>
-        <div className="mb-4 flex items-center gap-2">
-          <label className="text-gray-600 font-semibold">
-            Filter by Date:
-          </label>
-          <input
-            type="date"
-            value={oldNewsFilter}
-            onChange={e => setOldNewsFilter(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
-          />
-          {oldNewsFilter && (
+        {oldNews.length > 0 && (
+          <div className="mt-10">
             <button
-              onClick={() => setOldNewsFilter("")}
-              className="ml-2 text-sm text-red-500 hover:underline"
+              onClick={() => setShowOldNews(prev => !prev)}
+              className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
             >
-              Clear
+              {showOldNews ? "Hide Old News" : "Show Old News"}
             </button>
-          )}
-        </div>
 
-        <h2 className="text-xl font-bold mb-4 text-gray-500">
-          📰 Old News (24h+)
-        </h2>
+            {showOldNews && (
+              <>
+                <div className="mb-4 flex items-center gap-2">
+                  <label htmlFor="filterDate" className="text-gray-600 font-semibold">
+                    Filter by Date:
+                  </label>
+                  <input
+                    type="date"
+                    id="filterDate"
+                    value={oldNewsFilter}
+                    onChange={e => setOldNewsFilter(e.target.value)}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  {oldNewsFilter && (
+                    <button
+                      onClick={() => setOldNewsFilter("")}
+                      className="ml-2 text-sm text-red-500 hover:underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
 
-        {/* 🔥 Swiper Slider */}
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={16}
-          slidesPerView={"auto"}
-          loop={true}
-          speed={4000} // smooth continuous feel
-          autoplay={{
-            delay: 0, // continuous scroll
-            disableOnInteraction: false,
-          }}
-          freeMode={true}
-          grabCursor={true}
-        >
-          {oldNews.map((n) => (
-            <SwiperSlide
-              key={n._id}
-              style={{ width: "300px" }}
-            >
-              {renderCard(n, true)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </>
-    )}
-  </div>
-)}
+                <h2 className="text-xl font-bold mb-4 text-gray-500">
+                  📰 Old News (24h+)
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {oldNews.map(n => renderCard(n, true))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
