@@ -20,8 +20,13 @@ async function getNews(id: string) {
 }
 
 // ✅ OG META TAGS
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const news = await getNews(params.id);
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+
+  const { id } = await params; // ✅ IMPORTANT FIX
+
+  const news = await getNews(id);
 
   if (!news) {
     return {
@@ -30,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const url = `https://starnewsbackend.onrender.com/panna/${params.id}`;
+  const url = `https://starnewsnetworks.com//panna/${id}`;
   const image = news.featuredImage || news.images?.[0];
 
   return {
@@ -61,7 +66,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-
 // ✅ DIRECT USE
 export default function Page() {
   return <NewsDetailClient />;

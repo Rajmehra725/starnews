@@ -4,6 +4,11 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { io, Socket } from "socket.io-client";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/autoplay";
+
+import { Autoplay } from "swiper/modules";
 import {
   FaHeart,
   FaRegHeart,
@@ -46,15 +51,15 @@ export default function SatnaNewsPage() {
   const [animateLike, setAnimateLike] = useState<string | null>(null);
   const viewedRef = useRef<Set<string>>(new Set());
 
-  const visitorId =
+  const userId =
     typeof window !== "undefined"
-      ? localStorage.getItem("visitorId") ||
+      ? localStorage.getItem("userId") ||
         Math.random().toString(36).substring(2)
       : "";
 
   useEffect(() => {
-    if (visitorId) {
-      localStorage.setItem("visitorId", visitorId);
+    if (userId) {
+      localStorage.setItem("userId", userId);
     }
   }, []);
 
@@ -129,6 +134,22 @@ export default function SatnaNewsPage() {
       socket.disconnect();
     };
   }, []);
+useEffect(() => {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute("data-id");
+        if (id) handleView(id);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  document.querySelectorAll("[data-id]").forEach(el =>
+    observer.observe(el)
+  );
+
+  return () => observer.disconnect();
+}, [newsList]);
 
   const handleLike = async (id: string) => {
     setLiked(prev => ({ ...prev, [id]: !prev[id] }));
@@ -137,8 +158,8 @@ export default function SatnaNewsPage() {
     setTimeout(() => setAnimateLike(null), 700);
 
     await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/like/${id}`,
-      { visitorId }
+      `https://starnewsbackend.onrender.com/api/news/${id}/like`,
+      { userId }
     );
   };
 
@@ -148,8 +169,8 @@ export default function SatnaNewsPage() {
 
     try {
       await axios.post(
-        `https://starnewsbackend.onrender.com/api/interactions/view/${id}`,
-        { visitorId }
+        `https://starnewsbackend.onrender.com/api/news/${id}/view`,
+        { userId }
       );
     } catch {}
   };
@@ -244,8 +265,9 @@ export default function SatnaNewsPage() {
 
   const renderCard = (news: News, isOld = false) => (
     <div
-      key={news._id}
-      onMouseEnter={() => handleView(news._id)}
+  key={news._id}
+  data-id={news._id}
+     onClick={() => handleView(news._id)}
       className={`rounded-2xl overflow-hidden border transition-all duration-300 group
         ${isOld ? "bg-gray-50 opacity-80" : "bg-white hover:shadow-2xl hover:-translate-y-1"}
       `}
@@ -323,9 +345,9 @@ export default function SatnaNewsPage() {
         <div className="flex justify-between text-xs text-gray-400">
           <span>🕒 {timeAgo(news.createdAt)}</span>
           <span className="flex items-center gap-1">
-            <FaEye />
-            {news.views}
-          </span>
+  <FaEye />
+  {news.views ?? 0}
+</span>
         </div>
 
         <Link
@@ -372,49 +394,68 @@ export default function SatnaNewsPage() {
         </div>
 
         {/* OLD NEWS */}
-        {oldNews.length > 0 && (
-          <div className="mt-10">
+     {oldNews.length > 0 && (
+  <div className="mt-10">
+    <button
+      onClick={() => setShowOldNews(prev => !prev)}
+      className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+    >
+      {showOldNews ? "Hide Old News" : "Show Old News"}
+    </button>
+
+    {showOldNews && (
+      <>
+        <div className="mb-4 flex items-center gap-2">
+          <label className="text-gray-600 font-semibold">
+            Filter by Date:
+          </label>
+          <input
+            type="date"
+            value={oldNewsFilter}
+            onChange={e => setOldNewsFilter(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+          {oldNewsFilter && (
             <button
-              onClick={() => setShowOldNews(prev => !prev)}
-              className="mb-4 px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+              onClick={() => setOldNewsFilter("")}
+              className="ml-2 text-sm text-red-500 hover:underline"
             >
-              {showOldNews ? "Hide Old News" : "Show Old News"}
+              Clear
             </button>
+          )}
+        </div>
 
-            {showOldNews && (
-              <>
-                <div className="mb-4 flex items-center gap-2">
-                  <label htmlFor="filterDate" className="text-gray-600 font-semibold">
-                    Filter by Date:
-                  </label>
-                  <input
-                    type="date"
-                    id="filterDate"
-                    value={oldNewsFilter}
-                    onChange={e => setOldNewsFilter(e.target.value)}
-                    className="border rounded px-2 py-1 text-sm"
-                  />
-                  {oldNewsFilter && (
-                    <button
-                      onClick={() => setOldNewsFilter("")}
-                      className="ml-2 text-sm text-red-500 hover:underline"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
+        <h2 className="text-xl font-bold mb-4 text-gray-500">
+          📰 Old News (24h+)
+        </h2>
 
-                <h2 className="text-xl font-bold mb-4 text-gray-500">
-                  📰 Old News (24h+)
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {oldNews.map(n => renderCard(n, true))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+        {/* 🔥 Swiper Slider */}
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={16}
+          slidesPerView={"auto"}
+          loop={true}
+          speed={4000} // smooth continuous feel
+          autoplay={{
+            delay: 0, // continuous scroll
+            disableOnInteraction: false,
+          }}
+          freeMode={true}
+          grabCursor={true}
+        >
+          {oldNews.map((n) => (
+            <SwiperSlide
+              key={n._id}
+              style={{ width: "300px" }}
+            >
+              {renderCard(n, true)}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </>
+    )}
+  </div>
+)}
       </div>
     </div>
   );

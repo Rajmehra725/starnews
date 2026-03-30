@@ -71,7 +71,7 @@ export default function NewsDetailPage() {
 
   const fetchComments = async () => {
     const res = await axios.get(
-      `https://starnewsbackend.onrender.com/api/interactions/comment/${id}`
+      `https://starnewsbackend.onrender.com/api/news/${id}/comments`
     );
     const data = res.data;
 
@@ -92,7 +92,11 @@ export default function NewsDetailPage() {
         setNews((prev: any) => (prev ? { ...prev, likes } : prev));
       }
     });
-
+ socket.on("viewUpdated", ({ newsId, views }) => {
+      if (newsId === id) {
+        setNews((prev: any) => (prev ? { ...prev, views } : prev));
+      }
+    });
     return () => {
       if (socket) socket.disconnect();
     };
@@ -107,10 +111,17 @@ export default function NewsDetailPage() {
 
     load();
   }, [id]);
+ useEffect(() => {
+    if (!id || !visitorId) return;
 
+    axios.post(
+      `https://starnewsbackend.onrender.com/api/news/${id}/view`,
+      { userId: visitorId }
+    );
+  }, [id, visitorId]);
   const handleLike = async () => {
     await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/like/${id}`,
+      `https://starnewsbackend.onrender.com/api/news/${id}/like`,
       { visitorId }
     );
   };
@@ -166,7 +177,7 @@ export default function NewsDetailPage() {
     if (!text) return;
 
     await axios.post(
-      `https://starnewsbackend.onrender.com/api/interactions/comment/${id}`,
+      `https://starnewsbackend.onrender.com/api/news/${id}/comment`,
       { text, visitorId }
     );
 
