@@ -5,7 +5,8 @@ import PannaSection from "./panna/page";
 import IndiaNewsPage from "./india/page";
 import EntertainmentPage from "./entertainment/page";
 import BannerAd from "./components/BannerAd";
-
+import VideoSection from "./video/page";
+import PanchangSection from "./panchang/page";
 export default function Home() {
   const categories = [
     { name: "🇮🇳 देश", link: "/india" },
@@ -29,10 +30,37 @@ export default function Home() {
             <BannerAd />
           </div>
         </div>
+        <div className="max-w-md mx-auto rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-white to-blue-50 border">
+
+      <div className="p-5">
+        <h2 className="text-lg font-bold text-gray-800 mb-2">
+          📢 Latest Star News Blog
+        </h2>
+
+        <p className="text-sm text-gray-600 mb-4">
+          Click karke poora blog padhein aur latest updates ke saath updated rahein.
+        </p>
+
+        <Link
+          href="https://starnewsnetworks.blogspot.com/2026/03/blog-post.html?m=1"
+          target="_blank"
+        >
+          <button className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white py-2 rounded-xl hover:scale-105 transition">
+            Read Now →
+          </button>
+        </Link>
+      </div>
+    </div>
 
         {/* 📰 PANNA SECTION */}
         <Section title="🔴 पन्ना टॉप खबर" link="/panna">
           <PannaSection />
+        </Section>
+          <Section title="🔴 Youtube Videos " link="/video">
+          <VideoSection />
+        </Section>
+          <Section title="🔴 Hindi Panchang " link="/panchang">
+          <PanchangSection />
         </Section>
 
         {/* 📂 CATEGORY */}

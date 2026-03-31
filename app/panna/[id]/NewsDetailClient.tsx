@@ -237,18 +237,18 @@ export default function NewsDetailPage() {
 
         {/* IMAGES SLIDER */}
         {news.images && news.images.length > 0 && (
-          <div className="w-full rounded overflow-hidden mt-6 border-t pt-4">
-            <Swiper modules={[Autoplay]} autoplay={{ delay: 3000 }} loop>
-              {news.images.map((img, index) => (
-                <SwiperSlide key={index}>
-                  <img
-                    src={img}
-                    className="w-full h-[220px] md:h-[350px] object-cover rounded-md shadow"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+           <div className="w-[280px] sm:w-full md:w-full mx-auto rounded overflow-hidden mt-6 border-t pt-4">
+  <Swiper modules={[Autoplay]} autoplay={{ delay: 3000 }} loop>
+    {news.images.map((img, index) => (
+      <SwiperSlide key={index}>
+        <img
+          src={img}
+          className="w-full h-[220px] md:h-[350px] object-cover rounded-md shadow"
+        />
+      </SwiperSlide>
+    ))}
+  </Swiper>
+</div>
         )}
 
         {/* SECTIONS */}
@@ -260,7 +260,7 @@ export default function NewsDetailPage() {
               style={{ backgroundColor: sec.bgColor || "#f9f9f9", color: sec.textColor || "#000" }}
             >
               {sec.heading && (
-                <h2 className="font-bold text-xl md:text-2xl mb-3">
+                <h2 className="font-bold text-xl md:text-2xl mb-3 text-justify">
                   {sec.heading}
                 </h2>
               )}
@@ -270,7 +270,7 @@ export default function NewsDetailPage() {
                   className="w-full h-[200px] object-cover rounded mb-3 shadow"
                 />
               )}
-              <p className="text-gray-900 text-base md:text-lg">{sec.content}</p>
+              <p className="text-gray-900 text-base md:text-lg text-justify">{sec.content}</p>
             </div>
           ))}
 

@@ -41,11 +41,11 @@ export default function Navbar({ setIsOpen }: any) {
             <Youtube size={24} />
           </a>
 
-          <a href="https://www.facebook.com/share/1CK1ZzzX1B/" className="hover:opacity-80 transition">
+          <a href="https://www.facebook.com/share/1Dj3yMqD7R/" className="hover:opacity-80 transition">
             <Facebook size={24} />
           </a>
 
-          <a href="https://www.instagram.com/starnewsnetworks?igsh=NWw2cDhnbTllcWpv" className="hover:opacity-80 transition">
+          <a href="https://www.instagram.com/reel/DSEzE6VjA1u/?igsh=enR1OGZ0ZmN4enhz" className="hover:opacity-80 transition">
             <Instagram size={24} />
           </a>
 
