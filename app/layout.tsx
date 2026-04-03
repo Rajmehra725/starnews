@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import Script from "next/script";
 import MainLayout from "./MainLayout";
 import BottomTicker from "./components/BottomTicker";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -32,6 +32,24 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+
+       <Script
+          src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
+          strategy="afterInteractive"
+        />
+        <Script id="onesignal-init" strategy="afterInteractive">
+          {`
+            window.OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+              OneSignal.init({
+                appId: "YOUR_APP_ID",
+                notifyButton: {
+                  enable: true,
+                },
+              });
+            });
+          `}
+        </Script>
       <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
 
         <MainLayout>
