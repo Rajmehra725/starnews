@@ -50,25 +50,15 @@ export default function RootLayout({
       serviceWorkerPath: "/OneSignalSDKWorker.js",
       serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
 
-      allowLocalhostAsSecureOrigin: true,
-      logLevel: "trace",
-
       notifyButton: {
         enable: true,
-      },
-
-      promptOptions: {
-        slidedown: {
-          enabled: true,
-          autoPrompt: false,
-        }
       }
     });
 
-    // 🔥 FORCE PROMPT (MOST IMPORTANT)
-    setTimeout(() => {
-      OneSignal.showSlidedownPrompt();
-    }, 3000);
+    // 🔥 NEW METHOD
+    setTimeout(async () => {
+      await OneSignal.Notifications.requestPermission();
+    }, 4000);
   });
 `}
 </Script>
