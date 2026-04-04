@@ -32,44 +32,37 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+
+       <Script
+          src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
+          strategy="afterInteractive"
+        />
+        <Script id="onesignal-init" strategy="afterInteractive">
+          {`
+            window.OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+              OneSignal.init({
+                appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
+                notifyButton: {
+                  enable: true,
+                },
+              });
+            });
+          `}
+        </Script>
       <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
+
         <MainLayout>
           {children}
         </MainLayout>
-          {/* OneSignal SDK */}
-        <Script
-          src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-          strategy="afterInteractive"
-        />
 
-        {/* OneSignal Init */}
-     <Script id="onesignal-init" strategy="afterInteractive">
-  {`
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-
-    window.OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
-        notifyButton: { enable: true },
-        allowLocalhostAsSecureOrigin: true
-      });
-
-      // ✅ Prompt correct way
-      OneSignal.Slidedown.prompt();
-
-      // ✅ Debug subscription
-      OneSignal.User.PushSubscription.addEventListener("change", function (event) {
-        console.log("Subscribed:", event.current);
-      });
-
-      console.log("OneSignal Ready");
-    });
-  `}
-</Script>
-
+        {/* 🔴 Bottom Ads Ticker */}
         <BottomTicker />
+
+        {/* 💬 WhatsApp Floating */}
         <WhatsAppFloat />
+
       </body>
     </html>
   );
-}
+} 
