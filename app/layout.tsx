@@ -43,21 +43,32 @@ export default function RootLayout({
         />
 
         {/* OneSignal Init */}
-        <Script id="onesignal-init" strategy="afterInteractive">
-          {`
-            window.OneSignalDeferred = window.OneSignalDeferred || [];
+     <Script id="onesignal-init" strategy="afterInteractive">
+  {`
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-            OneSignalDeferred.push(async function(OneSignal) {
-              await OneSignal.init({
-                appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
-                notifyButton: { enable: true },
-                allowLocalhostAsSecureOrigin: true
-              });
+    window.OneSignalDeferred.push(function(OneSignal) {
+      OneSignal.init({
+        appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
+        notifyButton: { enable: true },
+        allowLocalhostAsSecureOrigin: true
+      });
 
-              OneSignal.showSlidedownPrompt();
-            });
-          `}
-        </Script>
+      // 👇 Subscription change check
+      OneSignal.on('subscriptionChange', function (isSubscribed) {
+        console.log("Subscribed:", isSubscribed);
+      });
+
+      // 👇 Debug user ID
+      OneSignal.getUserId().then(function(userId) {
+        console.log("User ID:", userId);
+      });
+
+      // 👇 Prompt (important)
+      OneSignal.showSlidedownPrompt();
+    });
+  `}
+</Script>
 
         <BottomTicker />
         <WhatsAppFloat />
