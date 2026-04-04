@@ -38,13 +38,13 @@ export default function RootLayout({
         strategy="afterInteractive"
       />
 
-      {/* ✅ Professional Init */}
+      {/* ✅ Fully Working OneSignal Init */}
       <Script id="onesignal-init" strategy="afterInteractive">
         {`
-          window.OneSignalDeferred = window.OneSignalDeferred || [];
+          window.OneSignal = window.OneSignal || [];
+          OneSignal.push(function() {
 
-          OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
+            OneSignal.init({
               appId: "eeee5e2f-e240-4204-b29b-32b080e46210",
 
               // 🔔 Bell Button (Auto Floating)
@@ -55,7 +55,7 @@ export default function RootLayout({
                 theme: "default",
               },
 
-              // 🚀 Auto Permission Prompt (Best for News)
+              // 🚀 Auto Permission Prompt
               promptOptions: {
                 slidedown: {
                   enabled: true,
@@ -68,7 +68,7 @@ export default function RootLayout({
                 }
               },
 
-              // 🌐 Welcome Notification (Optional)
+              // 🌐 Welcome Notification
               welcomeNotification: {
                 title: "Star News",
                 message: "Thanks for subscribing! 🔥 Latest updates aapko milte rahenge.",
@@ -76,7 +76,19 @@ export default function RootLayout({
 
               // 🛡️ Better UX
               autoResubscribe: true,
+              allowLocalhostAsSecureOrigin: true // Dev ke liye
             });
+
+            // ✅ Debug: Check if push is enabled
+            OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+              console.log("📌 Push Enabled?", isEnabled);
+            });
+
+            // ✅ Debug: Player ID
+            OneSignal.getUserId(function(userId) {
+              console.log("🆔 Player ID:", userId);
+            });
+
           });
         `}
       </Script>
