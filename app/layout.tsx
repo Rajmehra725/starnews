@@ -32,45 +32,32 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      {/* ✅ Latest OneSignal SDK */}
-      <Script
-        src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
-        strategy="afterInteractive"
-      />
+      <head>
+        {/* ✅ OneSignal Script */}
+        <Script
+          src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
+          strategy="afterInteractive"
+        />
 
-      {/* ✅ Professional Init */}
-     <Script id="onesignal-init" strategy="afterInteractive">
-{`
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
+        {/* ✅ OneSignal Init */}
+        <Script id="onesignal-init" strategy="afterInteractive">
+          {`
+            window.OneSignalDeferred = window.OneSignalDeferred || [];
+            OneSignalDeferred.push(async function(OneSignal) {
+              await OneSignal.init({
+                appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
+              });
+            });
+          `}
+        </Script>
+      </head>
 
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
-
-      serviceWorkerPath: "/OneSignalSDKWorker.js",
-      serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
-
-      notifyButton: {
-        enable: true,
-      }
-    });
-
-    // 🔥 NEW METHOD
-    setTimeout(async () => {
-      await OneSignal.Notifications.requestPermission();
-    }, 4000);
-  });
-`}
-</Script>
       <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
         <MainLayout>
           {children}
         </MainLayout>
 
-        {/* 🔴 Bottom Ads Ticker */}
         <BottomTicker />
-
-        {/* 💬 WhatsApp Floating */}
         <WhatsAppFloat />
       </body>
     </html>
