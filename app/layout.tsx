@@ -54,15 +54,15 @@ export default function RootLayout({
         allowLocalhostAsSecureOrigin: true
       });
 
-      // ✅ Correct prompt method (v16)
+      // ✅ Prompt correct way
       OneSignal.Slidedown.prompt();
 
-      // Debug
-      OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+      // ✅ Debug subscription
+      OneSignal.User.PushSubscription.addEventListener("change", function (event) {
         console.log("Subscribed:", event.current);
       });
 
-      console.log("OneSignal Initialized");
+      console.log("OneSignal Ready");
     });
   `}
 </Script>
