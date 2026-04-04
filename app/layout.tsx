@@ -32,35 +32,49 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      {/* ✅ OneSignal SDK */}
+      {/* ✅ Latest OneSignal SDK */}
       <Script
         src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
         strategy="afterInteractive"
       />
 
-      {/* ✅ FIXED INIT (no async/await) */}
+      {/* ✅ Professional Init */}
       <Script id="onesignal-init" strategy="afterInteractive">
         {`
           window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-          OneSignalDeferred.push(function(OneSignal) {
-            OneSignal.init({
+          OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
               appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
 
-              serviceWorkerPath: "/OneSignalSDKWorker.js",
-              serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
-
+              // 🔔 Bell Button (Auto Floating)
               notifyButton: {
                 enable: true,
+                position: "bottom-right",
+                size: "medium",
+                theme: "default",
               },
 
+              // 🚀 Auto Permission Prompt (Best for News)
               promptOptions: {
                 slidedown: {
                   enabled: true,
                   autoPrompt: true,
+                  text: {
+                    actionMessage: "🔔 Latest news paane ke liye notifications allow karein",
+                    acceptButton: "Allow",
+                    cancelButton: "No Thanks"
+                  }
                 }
               },
 
+              // 🌐 Welcome Notification (Optional)
+              welcomeNotification: {
+                title: "Star News",
+                message: "Thanks for subscribing! 🔥 Latest updates aapko milte rahenge.",
+              },
+
+              // 🛡️ Better UX
               autoResubscribe: true,
             });
           });
@@ -72,7 +86,10 @@ export default function RootLayout({
           {children}
         </MainLayout>
 
+        {/* 🔴 Bottom Ads Ticker */}
         <BottomTicker />
+
+        {/* 💬 WhatsApp Floating */}
         <WhatsAppFloat />
       </body>
     </html>
