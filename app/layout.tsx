@@ -32,50 +32,33 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      {/* ✅ Latest OneSignal SDK */}
+      {/* ✅ OneSignal SDK */}
       <Script
         src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
         strategy="afterInteractive"
       />
 
-      {/* ✅ Professional Init */}
+      {/* ✅ FIXED INIT (no async/await) */}
       <Script id="onesignal-init" strategy="afterInteractive">
         {`
           window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-          OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
+          OneSignalDeferred.push(function(OneSignal) {
+            OneSignal.init({
               appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
 
-              // 🔥 VERY IMPORTANT (Fix for Next.js)
               serviceWorkerPath: "/OneSignalSDKWorker.js",
               serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
 
-              // 🔔 Bell Button
               notifyButton: {
                 enable: true,
-                position: "bottom-right",
-                size: "medium",
-                theme: "default",
               },
 
-              // 🚀 Auto Prompt
               promptOptions: {
                 slidedown: {
                   enabled: true,
                   autoPrompt: true,
-                  text: {
-                    actionMessage: "🔔 Latest news paane ke liye notifications allow karein",
-                    acceptButton: "Allow",
-                    cancelButton: "No Thanks"
-                  }
                 }
-              },
-
-              // 🌐 Welcome Notification
-              welcomeNotification: {
-                title: "Star News",
-                message: "Thanks for subscribing! 🔥 Latest updates aapko milte rahenge.",
               },
 
               autoResubscribe: true,
