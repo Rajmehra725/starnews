@@ -45,7 +45,7 @@ export default function RootLayout({
 
           OneSignalDeferred.push(async function(OneSignal) {
             await OneSignal.init({
-              appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
+              appId: "5084b9c1-5107-4b55-a60c-72b44ca306b1",
 
               // 🔔 Bell Button (Auto Floating)
               notifyButton: {
