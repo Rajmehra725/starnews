@@ -45,9 +45,13 @@ export default function RootLayout({
 
           OneSignalDeferred.push(async function(OneSignal) {
             await OneSignal.init({
-              appId: "eeee5e2f-e240-4204-b29b-32b080e46210",
+              appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
 
-              // 🔔 Bell Button (Auto Floating)
+              // 🔥 VERY IMPORTANT (Fix for Next.js)
+              serviceWorkerPath: "/OneSignalSDKWorker.js",
+              serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
+
+              // 🔔 Bell Button
               notifyButton: {
                 enable: true,
                 position: "bottom-right",
@@ -55,7 +59,7 @@ export default function RootLayout({
                 theme: "default",
               },
 
-              // 🚀 Auto Permission Prompt (Best for News)
+              // 🚀 Auto Prompt
               promptOptions: {
                 slidedown: {
                   enabled: true,
@@ -68,13 +72,12 @@ export default function RootLayout({
                 }
               },
 
-              // 🌐 Welcome Notification (Optional)
+              // 🌐 Welcome Notification
               welcomeNotification: {
                 title: "Star News",
                 message: "Thanks for subscribing! 🔥 Latest updates aapko milte rahenge.",
               },
 
-              // 🛡️ Better UX
               autoResubscribe: true,
             });
           });
@@ -86,10 +89,7 @@ export default function RootLayout({
           {children}
         </MainLayout>
 
-        {/* 🔴 Bottom Ads Ticker */}
         <BottomTicker />
-
-        {/* 💬 WhatsApp Floating */}
         <WhatsAppFloat />
       </body>
     </html>
