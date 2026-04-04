@@ -39,48 +39,39 @@ export default function RootLayout({
       />
 
       {/* ✅ Professional Init */}
-      <Script id="onesignal-init" strategy="afterInteractive">
-        {`
-          window.OneSignalDeferred = window.OneSignalDeferred || [];
+     <Script id="onesignal-init" strategy="afterInteractive">
+{`
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-          OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-              appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
 
-              // 🔔 Bell Button (Auto Floating)
-              notifyButton: {
-                enable: true,
-                position: "bottom-right",
-                size: "medium",
-                theme: "default",
-              },
+      serviceWorkerPath: "/OneSignalSDKWorker.js",
+      serviceWorkerUpdaterPath: "/OneSignalSDKUpdaterWorker.js",
 
-              // 🚀 Auto Permission Prompt (Best for News)
-              promptOptions: {
-                slidedown: {
-                  enabled: true,
-                  autoPrompt: true,
-                  text: {
-                    actionMessage: "🔔 Latest news paane ke liye notifications allow karein",
-                    acceptButton: "Allow",
-                    cancelButton: "No Thanks"
-                  }
-                }
-              },
+      allowLocalhostAsSecureOrigin: true,
+      logLevel: "trace",
 
-              // 🌐 Welcome Notification (Optional)
-              welcomeNotification: {
-                title: "Star News",
-                message: "Thanks for subscribing! 🔥 Latest updates aapko milte rahenge.",
-              },
+      notifyButton: {
+        enable: true,
+      },
 
-              // 🛡️ Better UX
-              autoResubscribe: true,
-            });
-          });
-        `}
-      </Script>
+      promptOptions: {
+        slidedown: {
+          enabled: true,
+          autoPrompt: false,
+        }
+      }
+    });
 
+    // 🔥 FORCE PROMPT (MOST IMPORTANT)
+    setTimeout(() => {
+      OneSignal.showSlidedownPrompt();
+    }, 3000);
+  });
+`}
+</Script>
       <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
         <MainLayout>
           {children}
