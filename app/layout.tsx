@@ -32,30 +32,32 @@ export default function RootLayout({
       lang="hi"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        {/* ✅ OneSignal Script */}
+      <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
+        <MainLayout>
+          {children}
+        </MainLayout>
+          {/* OneSignal SDK */}
         <Script
           src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"
           strategy="afterInteractive"
         />
 
-        {/* ✅ OneSignal Init */}
+        {/* OneSignal Init */}
         <Script id="onesignal-init" strategy="afterInteractive">
           {`
             window.OneSignalDeferred = window.OneSignalDeferred || [];
+
             OneSignalDeferred.push(async function(OneSignal) {
               await OneSignal.init({
-                appId: "f3843a47-6b7a-4564-83de-c91cc1cb7f64",
+                appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
+                notifyButton: { enable: true },
+                allowLocalhostAsSecureOrigin: true
               });
+
+              OneSignal.showSlidedownPrompt();
             });
           `}
         </Script>
-      </head>
-
-      <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
-        <MainLayout>
-          {children}
-        </MainLayout>
 
         <BottomTicker />
         <WhatsAppFloat />
