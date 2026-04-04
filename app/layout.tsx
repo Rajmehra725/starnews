@@ -47,25 +47,22 @@ export default function RootLayout({
   {`
     window.OneSignalDeferred = window.OneSignalDeferred || [];
 
-    window.OneSignalDeferred.push(function(OneSignal) {
-      OneSignal.init({
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
         appId: "a9b347a6-b6c4-425a-8321-c11b9c94aa80",
         notifyButton: { enable: true },
         allowLocalhostAsSecureOrigin: true
       });
 
-      // 👇 Subscription change check
-      OneSignal.on('subscriptionChange', function (isSubscribed) {
-        console.log("Subscribed:", isSubscribed);
+      // ✅ Correct prompt method (v16)
+      OneSignal.Slidedown.prompt();
+
+      // Debug
+      OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+        console.log("Subscribed:", event.current);
       });
 
-      // 👇 Debug user ID
-      OneSignal.getUserId().then(function(userId) {
-        console.log("User ID:", userId);
-      });
-
-      // 👇 Prompt (important)
-      OneSignal.showSlidedownPrompt();
+      console.log("OneSignal Initialized");
     });
   `}
 </Script>
