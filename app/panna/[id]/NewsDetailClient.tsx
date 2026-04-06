@@ -23,8 +23,12 @@ interface SectionType {
   heading: string;
   content: string;
   image?: string;
-  bgColor?: string;
-  textColor?: string;
+
+  headingBgColor?: string;
+  headingTextColor?: string;
+
+  contentBgColor?: string;
+  contentTextColor?: string;
 }
 
 interface NewsType {
@@ -177,7 +181,7 @@ const id = params.id as string;
             await navigator.share(shareData);
 
             await axios.post(
-              `https://starnewsbackend.onrender.com/api/interactions/share/${id}`
+              `https://starnewsbackend.onrender.com/api/news/${id}/share`
             );
 
             return;
@@ -193,7 +197,7 @@ const id = params.id as string;
       );
 
       await axios.post(
-        `https://starnewsbackend.onrender.com/api/interactions/share/${id}`
+        `https://starnewsbackend.onrender.com/api/news/${id}/share`
       );
 
     } catch (err) {
@@ -281,27 +285,43 @@ const id = params.id as string;
         )}
 
         {/* SECTIONS */}
-        {news.sections &&
-          news.sections.map((sec) => (
-            <div
-              key={sec._id}
-              className="mt-6 p-5 rounded-lg shadow-inner"
-              style={{ backgroundColor: sec.bgColor || "#f9f9f9", color: sec.textColor || "#000" }}
-            >
-              {sec.heading && (
-                <h2 className="font-bold text-xl md:text-2xl mb-3 text-justify">
-                  {sec.heading}
-                </h2>
-              )}
-              {sec.image && (
-                <img
-                  src={sec.image}
-                  className="w-full h-[200px] object-cover rounded mb-3 shadow"
-                />
-              )}
-              <p className="text-gray-900 text-base md:text-lg text-justify">{sec.content}</p>
-            </div>
-          ))}
+       {news.sections &&
+  news.sections.map((sec) => (
+    <div key={sec._id} className="mt-6 rounded-lg overflow-hidden shadow">
+
+      {sec.heading && (
+        <div
+          className="p-4 font-bold text-xl md:text-2xl"
+          style={{
+            backgroundColor: sec.headingBgColor || "#f3f4f6",
+            color: sec.headingTextColor || "#000",
+          }}
+        >
+          {sec.heading}
+        </div>
+      )}
+
+      <div
+        className="p-5"
+        style={{
+          backgroundColor: sec.contentBgColor || "#ffffff",
+          color: sec.contentTextColor || "#000",
+        }}
+      >
+        {sec.image && (
+          <img
+            src={sec.image}
+            className="w-full h-[200px] object-cover rounded mb-3 shadow"
+          />
+        )}
+
+        <p className="text-base md:text-lg text-justify">
+          {sec.content}
+        </p>
+      </div>
+
+    </div>
+  ))}
 
         {/* LIKE / VIEW / SHARE / COMMENTS */}
        <div className="flex justify-between items-center border-t border-b py-3 mt-6 text-gray-700">

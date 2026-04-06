@@ -88,7 +88,7 @@ export default function SatnaNewsPage() {
   const fetchNews = async () => {
     setLoading(true);
     const res = await axios.get(
-      "http://localhost:5000/api/news"
+      "https://starnewsbackend.onrender.com/api/news"
     );
     setNewsList(res.data);
     setLoading(false);
@@ -98,7 +98,7 @@ export default function SatnaNewsPage() {
     fetchNews();
 
     const socket: Socket = io(
-      "http://localhost:5000"
+      "https://starnewsbackend.onrender.com"
     );
 
     socket.on("likeUpdated", ({ newsId, likes }) => {
@@ -153,7 +153,7 @@ useEffect(() => {
     setTimeout(() => setAnimateLike(null), 700);
 
     await axios.post(
-      `http://localhost:5000/api/news/${id}/like`,
+      `https://starnewsbackend.onrender.com/api/news/${id}/like`,
       { userId }
     );
   };
@@ -164,7 +164,7 @@ useEffect(() => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/news/${id}/view`,
+        `https://starnewsbackend.onrender.com/api/news/${id}/view`,
         { userId }
       );
     } catch {}
@@ -174,68 +174,68 @@ useEffect(() => {
     setSaved(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  
   const handleShare = async (news: News) => {
-    const url = `${window.location.origin}/panna/${news._id}`;
+  const url = `${window.location.origin}/panna/${news._id}`;
+  const shareText = `${news.title}\n\n${news.description}`;
 
-    const shareText = `${news.title}\n\n${news.description}`;
+  try {
+    const imageUrl = news.featuredImage;
+
+    if (navigator.canShare && imageUrl) {
+      try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+
+        const file = new File([blob], "news.jpg", {
+          type: blob.type || "image/jpeg",
+        });
+
+        const shareData: any = {
+          title: news.title,
+          text: shareText,
+          url: url,
+          files: [file],
+        };
+
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+
+          // ✅ FIX HERE
+          await axios.post(
+            `https://starnewsbackend.onrender.com/api/news/${news._id}/share`,
+            { userId: "guest" }
+          );
+
+          return;
+        }
+      } catch {
+        console.log("Image fetch failed");
+      }
+    }
+
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(
+        shareText + "\n\n" + url
+      )}`,
+      "_blank"
+    );
+
+    // ✅ FIX HERE
+    await axios.post(
+      `https://starnewsbackend.onrender.com/api/news/${news._id}/share`,
+      { userId: "guest" }
+    );
+
+  } catch (err) {
+    console.log("Share failed");
 
     try {
-      const imageUrl = news.featuredImage;
-
-      if (navigator.canShare && imageUrl) {
-        try {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-
-          const file = new File([blob], "news.jpg", {
-            type: blob.type || "image/jpeg",
-          });
-
-          const shareData: any = {
-            title: news.title,
-            text: shareText,
-            url: url,
-            files: [file],
-          };
-
-          if (navigator.canShare(shareData)) {
-            await navigator.share(shareData);
-
-            try {
-              await axios.post(
-                `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-              );
-            } catch {}
-
-            return;
-          }
-        } catch {
-          console.log("Image fetch failed");
-        }
-      }
-
-      window.open(
-        `https://wa.me/?text=${encodeURIComponent(
-          shareText + "\n\n" + url
-        )}`,
-        "_blank"
-      );
-
-      try {
-        await axios.post(
-          `https://starnewsbackend.onrender.com/api/interactions/share/${news._id}`
-        );
-      } catch {}
-
-    } catch (err) {
-      console.log("Share failed");
-
-      try {
-        await navigator.clipboard.writeText(url);
-        alert("Link copied 👍");
-      } catch {}
-    }
-  };
+      await navigator.clipboard.writeText(url);
+      alert("Link copied 👍");
+    } catch {}
+  }
+};
 
   const handleCopyLink = async (id: string) => {
   try {
