@@ -42,7 +42,8 @@ interface NewsType {
 }
 
 export default function NewsDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+const id = params.id as string;
 
   const [news, setNews] = useState<NewsType | null>(null);
   const [comments, setComments] = useState<CommentType[]>([]);

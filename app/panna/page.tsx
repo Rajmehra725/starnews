@@ -88,7 +88,7 @@ export default function SatnaNewsPage() {
   const fetchNews = async () => {
     setLoading(true);
     const res = await axios.get(
-      "https://starnewsbackend.onrender.com/api/news"
+      "http://localhost:5000/api/news"
     );
     setNewsList(res.data);
     setLoading(false);
@@ -98,7 +98,7 @@ export default function SatnaNewsPage() {
     fetchNews();
 
     const socket: Socket = io(
-      "https://starnewsbackend.onrender.com"
+      "http://localhost:5000"
     );
 
     socket.on("likeUpdated", ({ newsId, likes }) => {
@@ -153,7 +153,7 @@ useEffect(() => {
     setTimeout(() => setAnimateLike(null), 700);
 
     await axios.post(
-      `https://starnewsbackend.onrender.com/api/news/${id}/like`,
+      `http://localhost:5000/api/news/${id}/like`,
       { userId }
     );
   };
@@ -164,7 +164,7 @@ useEffect(() => {
 
     try {
       await axios.post(
-        `https://starnewsbackend.onrender.com/api/news/${id}/view`,
+        `http://localhost:5000/api/news/${id}/view`,
         { userId }
       );
     } catch {}
