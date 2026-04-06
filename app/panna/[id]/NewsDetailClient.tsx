@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
@@ -8,7 +8,6 @@ import { Eye, Heart, MessageCircle, Share2 } from "lucide-react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import "swiper/css/autoplay";
 import { Autoplay } from "swiper/modules";
 
 let socket: Socket;
@@ -52,6 +51,8 @@ export default function NewsDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
+  const viewedRef = useRef(false);
+
   useEffect(() => {
     let vid = localStorage.getItem("visitorId");
     if (!vid) {
@@ -61,13 +62,16 @@ export default function NewsDetailPage() {
     setVisitorId(vid);
   }, []);
 
+  // ✅ FIXED (fetch by id)
   const fetchNews = async () => {
-    const res = await axios.get(
-      "https://starnewsbackend.onrender.com/api/news"
-    );
-    const found = res.data.find((n: NewsType) => n._id === id);
-    setNews(found);
-  };
+  const res = await axios.get(
+    "https://starnewsbackend.onrender.com/api/news"
+  );
+
+  const found = res.data.find((n: NewsType) => n._id === id);
+
+  setNews(found);
+};
 
   const fetchComments = async () => {
     const res = await axios.get(
@@ -92,11 +96,23 @@ export default function NewsDetailPage() {
         setNews((prev: any) => (prev ? { ...prev, likes } : prev));
       }
     });
- socket.on("viewUpdated", ({ newsId, views }) => {
+
+    // ✅ realtime views
+    socket.on("viewsUpdated", ({ newsId, views }) => {
       if (newsId === id) {
-        setNews((prev: any) => (prev ? { ...prev, views } : prev));
+        setNews((prev: any) => {
+          if (!prev) return prev;
+          return { ...prev, views };
+        });
       }
     });
+
+    socket.on("shareUpdated", ({ newsId, shares }) => {
+      if (newsId === id) {
+        setNews((prev: any) => (prev ? { ...prev, shares } : prev));
+      }
+    });
+
     return () => {
       if (socket) socket.disconnect();
     };
@@ -111,18 +127,23 @@ export default function NewsDetailPage() {
 
     load();
   }, [id]);
- useEffect(() => {
-    if (!id || !visitorId) return;
+
+  // ✅ view increment
+  useEffect(() => {
+    if (!id || !visitorId || viewedRef.current) return;
+
+    viewedRef.current = true;
 
     axios.post(
       `https://starnewsbackend.onrender.com/api/news/${id}/view`,
       { userId: visitorId }
     );
   }, [id, visitorId]);
+
   const handleLike = async () => {
     await axios.post(
       `https://starnewsbackend.onrender.com/api/news/${id}/like`,
-      { visitorId }
+      { userId: visitorId }
     );
   };
 
@@ -153,11 +174,14 @@ export default function NewsDetailPage() {
 
           if (navigator.canShare(shareData)) {
             await navigator.share(shareData);
+
+            await axios.post(
+              `https://starnewsbackend.onrender.com/api/interactions/share/${id}`
+            );
+
             return;
           }
-        } catch {
-          console.log("Image fetch failed");
-        }
+        } catch {}
       }
 
       window.open(
@@ -166,10 +190,15 @@ export default function NewsDetailPage() {
         )}`,
         "_blank"
       );
+
+      await axios.post(
+        `https://starnewsbackend.onrender.com/api/interactions/share/${id}`
+      );
+
     } catch (err) {
-      console.error(err);
-      await navigator.clipboard.writeText(shareText + "\n\nRead more: " + url);
-      alert("News copied!");
+      await navigator.clipboard.writeText(
+        shareText + "\n\nRead more: " + url
+      );
     }
   };
 
@@ -198,7 +227,6 @@ export default function NewsDetailPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans">
-
       {/* HEADER */}
       <div className="bg-red-700 text-white px-4 py-3 flex justify-between items-center shadow-md">
         <h1 className="text-xl font-bold tracking-wide">📰 STAR NEWS</h1>
@@ -275,31 +303,31 @@ export default function NewsDetailPage() {
           ))}
 
         {/* LIKE / VIEW / SHARE / COMMENTS */}
-        <div className="flex justify-between items-center border-t border-b py-3 mt-6 text-gray-700">
+       <div className="flex justify-between items-center border-t border-b py-3 mt-6 text-gray-700">
 
-          <button
-            onClick={handleLike}
-            className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-all font-medium"
-          >
-            <Heart size={20}/> {news.likes}
-          </button>
+<button
+onClick={handleLike}
+className="flex items-center gap-2 text-red-600 hover:text-red-700 transition-all font-medium"
+>
+<Heart size={20}/> {news.likes}
+</button>
 
-          <span className="flex items-center gap-2">
-            <Eye size={20}/> {news.views}
-          </span>
+<span className="flex items-center gap-2">
+<Eye size={20}/> {news?.views ?? 0}
+</span>
 
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-all font-medium"
-          >
-            <Share2 size={20}/> Share
-          </button>
+<button
+onClick={handleShare}
+className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-all font-medium"
+>
+<Share2 size={20}/> {news.shares ?? 0}
+</button>
 
-          <span className="flex items-center gap-2">
-            <MessageCircle size={20}/> {comments.length}
-          </span>
+<span className="flex items-center gap-2">
+<MessageCircle size={20}/> {comments.length}
+</span>
 
-        </div>
+</div> 
 
       </div>
 
