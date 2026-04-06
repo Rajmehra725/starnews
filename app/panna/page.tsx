@@ -175,14 +175,26 @@ useEffect(() => {
   };
 
   
-  const handleShare = async (news: News) => {
+ const handleShare = async (news: News) => {
   const url = `${window.location.origin}/panna/${news._id}`;
   const shareText = `${news.title}\n\n${news.description}`;
+
+  const incrementShare = async () => {
+    try {
+      await axios.post(
+        `https://starnewsbackend.onrender.com/api/news/${news._id}/share`,
+        { userId: "guest" }
+      );
+    } catch (err) {
+      console.log("Share count failed");
+    }
+  };
 
   try {
     const imageUrl = news.featuredImage;
 
-    if (navigator.canShare && imageUrl) {
+    // ✅ Native Share (Mobile)
+    if (navigator.share && imageUrl) {
       try {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
@@ -194,49 +206,43 @@ useEffect(() => {
         const shareData: any = {
           title: news.title,
           text: shareText,
-          url: url,
+          url,
           files: [file],
         };
 
-        if (navigator.canShare(shareData)) {
+        if (navigator.canShare?.(shareData)) {
           await navigator.share(shareData);
 
-          // ✅ FIX HERE
-          await axios.post(
-            `https://starnewsbackend.onrender.com/api/news/${news._id}/share`,
-            { userId: "guest" }
-          );
-
+          // ✅ increment only after successful share
+          await incrementShare();
           return;
         }
       } catch {
-        console.log("Image fetch failed");
+        console.log("Image share failed");
       }
     }
 
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(
-        shareText + "\n\n" + url
-      )}`,
-      "_blank"
-    );
+    // ✅ WhatsApp fallback
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+      `${shareText}\n\n${url}`
+    )}`;
 
-    // ✅ FIX HERE
-    await axios.post(
-      `https://starnewsbackend.onrender.com/api/news/${news._id}/share`,
-      { userId: "guest" }
-    );
+    window.open(whatsappUrl, "_blank");
+
+    await incrementShare();
 
   } catch (err) {
-    console.log("Share failed");
+    console.log("Share failed, copying link...");
 
+    // ✅ clipboard fallback
     try {
       await navigator.clipboard.writeText(url);
       alert("Link copied 👍");
+
+      await incrementShare();
     } catch {}
   }
 };
-
   const handleCopyLink = async (id: string) => {
   try {
     const link = `${window.location.origin}/panna/${id}`;
@@ -321,9 +327,10 @@ useEffect(() => {
             <span>{news.comments?.length}</span>
           </div>
 
-          <button onClick={() => handleShare(news)}>
+           <div className="flex items-center gap-1">
             <FaShareAlt />
-          </button>
+            <span>{news.comments?.length}</span>
+          </div>
 
           <button onClick={() => handleCopyLink(news._id)}>
             📋
