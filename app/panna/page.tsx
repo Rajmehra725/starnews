@@ -372,7 +372,7 @@ useEffect(() => {
             STAR NEWS
           </h1>
           <span className="text-sm text-gray-500">
-            Live • Panna & Satna
+            Live • Panna & Satna & Chhatarpur
           </span>
         </div>
       </div>

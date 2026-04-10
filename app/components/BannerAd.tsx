@@ -50,20 +50,41 @@ export default function BannerAd() {
               <div className="relative w-full overflow-hidden rounded-md">
 
                 {/* ✅ IMAGE RESPONSIVE */}
-                <img
-                  src={
-                    banner.image?.startsWith("http")
-                      ? banner.image
-                      : `${BASE}${banner.image}`
-                  }
-                  className="
-                    w-full 
-                    h-[100px]       /* mobile */
-                    md:h-[140px]    /* tablet */
-                    lg:h-[200px]    /* desktop */
-                    object-cover
-                  "
-                />
+               {banner.type === "video" ? (
+  <video
+    src={
+      (banner.url || banner.image)?.startsWith("http")
+        ? (banner.url || banner.image)
+        : `${BASE}${banner.url || banner.image}`
+    }
+    autoPlay
+    muted
+    loop
+    playsInline
+    className="
+      w-full 
+      h-[100px]
+      md:h-[140px]
+      lg:h-[200px]
+      object-cover
+    "
+  />
+) : (
+  <img
+    src={
+      (banner.url || banner.image)?.startsWith("http")
+        ? (banner.url || banner.image)
+        : `${BASE}${banner.url || banner.image}`
+    }
+    className="
+      w-full 
+      h-[100px]
+      md:h-[140px]
+      lg:h-[200px]
+      object-cover
+    "
+  />
+)}
 
                 {/* Overlay */}
                 <div className="
