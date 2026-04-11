@@ -1,6 +1,10 @@
 "use client";
 
+"use client";
+
 import { useEffect, useState } from "react";
+
+const API = "https://starnewsbackend.onrender.com/api/newsSubmit";
 
 export default function SubmitNews() {
   const [form, setForm] = useState({
@@ -14,53 +18,89 @@ export default function SubmitNews() {
     email: "",
   });
 
+  const [images, setImages] = useState<File[]>([]);
+  const [video, setVideo] = useState<File | null>(null);
+
   const [approvedNews, setApprovedNews] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 📥 Fetch approved news
+  // fetch approved
   const fetchApprovedNews = async () => {
-    const res = await fetch("https://starnewsbackend.onrender.com/api/newsSubmit/approved");
-    const data = await res.json();
-    setApprovedNews(data);
+    try {
+      const res = await fetch(`${API}/approved`);
+      const data = await res.json();
+      setApprovedNews(data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
     fetchApprovedNews();
   }, []);
 
-  // 📨 Submit
+  // submit
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
 
-    await fetch("https://starnewsbackend.onrender.com/api/newsSubmit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
+    const formData = new FormData();
+
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
     });
 
-    alert("📰 Your news has been submitted for review!");
+    images.forEach((img) => {
+      formData.append("images", img);
+    });
+
+    if (video) {
+      formData.append("video", video);
+    }
+
+    try {
+      const res = await fetch(API, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      console.log("response:", data);
+
+      if (!res.ok) {
+        throw new Error(data.error || "Submit failed");
+      }
+
+      alert("📰 Your news has been submitted for review!");
+
+      fetchApprovedNews();
+
+      setImages([]);
+      setVideo(null);
+
+      setForm({
+        title: "",
+        content: "",
+        category: "",
+        location: "",
+        district: "",
+        name: "",
+        mobile: "",
+        email: "",
+      });
+
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error submitting news");
+    }
+
     setLoading(false);
-
-    // reset form
-    setForm({
-      title: "",
-      content: "",
-      category: "",
-      location: "",
-      district: "",
-      name: "",
-      mobile: "",
-      email: "",
-    });
   };
-
   return (
     <div className="min-h-screen bg-gray-100">
 
-      {/* 🔴 HEADER */}
+      {/* HEADER */}
       <div className="bg-red-600 text-white p-4 text-center shadow">
         <h1 className="text-2xl font-bold">⭐ Star News Reporter</h1>
         <p className="text-sm">Submit your local news & get published</p>
@@ -68,7 +108,7 @@ export default function SubmitNews() {
 
       <div className="max-w-6xl mx-auto p-4 grid md:grid-cols-2 gap-6">
 
-        {/* 📝 FORM */}
+        {/* FORM */}
         <div className="bg-white rounded-xl shadow p-5">
           <h2 className="text-lg font-semibold mb-4">📰 Submit News</h2>
 
@@ -135,16 +175,60 @@ export default function SubmitNews() {
               <option>Sports</option>
             </select>
 
+            {/* IMAGE */}
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="w-full border p-2 rounded"
+              onChange={(e) =>
+                setImages(Array.from(e.target.files || []))
+              }
+            />
+
+            {/* IMAGE PREVIEW */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 gap-2">
+                {images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={URL.createObjectURL(img)}
+                    className="h-24 object-cover rounded"
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* VIDEO */}
+            <input
+              type="file"
+              accept="video/*"
+              className="w-full border p-2 rounded"
+              onChange={(e) =>
+                setVideo(e.target.files?.[0] || null)
+              }
+            />
+
+            {/* VIDEO PREVIEW */}
+            {video && (
+              <video
+                src={URL.createObjectURL(video)}
+                className="w-full h-40 object-cover rounded"
+                controls
+              />
+            )}
+
             <button
               disabled={loading}
               className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded font-semibold"
             >
               {loading ? "Submitting..." : "Submit News"}
             </button>
+
           </form>
         </div>
 
-        {/* 🌐 APPROVED NEWS */}
+        {/* APPROVED NEWS */}
         <div>
           <h2 className="text-lg font-semibold mb-3">🟢 Approved News</h2>
 
@@ -157,7 +241,30 @@ export default function SubmitNews() {
               <div key={item._id} className="bg-white p-4 rounded shadow">
 
                 <h3 className="font-bold text-lg">{item.title}</h3>
-                <p className="text-sm text-gray-600 mt-1">{item.content}</p>
+
+                {item.video && (
+                  <video
+                    src={item.video}
+                    controls
+                    className="w-full h-48 object-cover rounded mt-2"
+                  />
+                )}
+
+                {item.images?.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {item.images.map((img: string, i: number) => (
+                      <img
+                        key={i}
+                        src={img}
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                )}
+
+                <p className="text-sm text-gray-600 mt-2">
+                  {item.content}
+                </p>
 
                 <div className="text-xs text-gray-500 mt-2 flex justify-between">
                   <span>👤 {item.name}</span>
