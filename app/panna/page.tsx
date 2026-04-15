@@ -12,9 +12,7 @@ import {
   FaCheckCircle,
   FaBookmark,
   FaRegBookmark,
-    FaInstagram,
-  FaFacebookF,
-  FaYoutube,
+   FaInstagram, FaFacebookF, FaYoutube, FaTwitter,
 } from "react-icons/fa";
 import { FaShareAlt } from "react-icons/fa";
 
@@ -358,7 +356,7 @@ const renderCard = (news: News, isOld = false) => (
     href={`https://www.instagram.com/reel/DSEzE6VjA1u/?igsh=enR1OGZ0ZmN4enhz`}
     target="_blank"
     onClick={(e) => e.stopPropagation()}
-    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gradient-to-tr hover:from-pink-500 hover:to-yellow-500 hover:text-white transition"
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-gradient-to-tr from-pink-500 to-yellow-500 text-white"
   >
     <FaInstagram />
   </a>
@@ -367,7 +365,7 @@ const renderCard = (news: News, isOld = false) => (
     href={`https://www.facebook.com/share/1Dj3yMqD7R/`}
     target="_blank"
     onClick={(e) => e.stopPropagation()}
-    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-600 hover:text-white transition"
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-blue-600 text-white"
   >
     <FaFacebookF />
   </a>
@@ -376,9 +374,19 @@ const renderCard = (news: News, isOld = false) => (
     href={`https://youtube.com/@starnewsnetworks88?si=HHAEJevcHq48Fdrh`}
     target="_blank"
     onClick={(e) => e.stopPropagation()}
-    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-red-600 hover:text-white transition"
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-red-600 text-white"
   >
     <FaYoutube />
+  </a>
+
+  {/* Twitter (X) */}
+  <a
+    href={`https://x.com/starnews88s`}
+    target="_blank"
+    onClick={(e) => e.stopPropagation()}
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-sky-500 text-white"
+  >
+    <FaTwitter />
   </a>
 
 </div>
