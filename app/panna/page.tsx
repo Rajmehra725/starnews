@@ -11,7 +11,10 @@ import {
   FaEye,
   FaCheckCircle,
   FaBookmark,
-  FaRegBookmark
+  FaRegBookmark,
+    FaInstagram,
+  FaFacebookF,
+  FaYoutube,
 } from "react-icons/fa";
 import { FaShareAlt } from "react-icons/fa";
 
@@ -264,103 +267,140 @@ useEffect(() => {
     )
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const renderCard = (news: News, isOld = false) => (
+ 
+
+const renderCard = (news: News, isOld = false) => (
+  <div
+    key={news._id}
+    data-id={news._id}
+    onClick={() => handleView(news._id)}
+    className={`rounded-2xl overflow-hidden border transition-all duration-300 group
+      ${isOld ? "bg-gray-50 opacity-80" : "bg-white hover:shadow-2xl hover:-translate-y-1"}
+    `}
+  >
     <div
-  key={news._id}
-  data-id={news._id}
-     onClick={() => handleView(news._id)}
-      className={`rounded-2xl overflow-hidden border transition-all duration-300 group
-        ${isOld ? "bg-gray-50 opacity-80" : "bg-white hover:shadow-2xl hover:-translate-y-1"}
-      `}
+      className="relative"
+      onDoubleClick={() => handleLike(news._id)}
     >
-      <div
-        className="relative"
-        onDoubleClick={() => handleLike(news._id)}
-      >
-        <img
-          src={news.featuredImage || "/no-image.png"}
-          className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
-        />
+      <img
+        src={news.featuredImage || "/no-image.png"}
+        className="w-full h-52 object-cover group-hover:scale-105 transition duration-300"
+      />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-        {animateLike === news._id && (
-          <FaHeart className="absolute text-white text-7xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping" />
+      {animateLike === news._id && (
+        <FaHeart className="absolute text-white text-7xl left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping" />
+      )}
+
+      {news.breaking && (
+        <span className="absolute top-3 left-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow">
+          🔴 BREAKING
+        </span>
+      )}
+
+      <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-black text-xs px-3 py-1 rounded-full font-semibold shadow">
+        {news.category || "LOCAL"}
+      </span>
+    </div>
+
+    <div className="p-4 space-y-3">
+      <h2 className="font-bold text-lg text-gray-900 line-clamp-2 flex items-center gap-2">
+        {news.title}
+        {news.verified && (
+          <FaCheckCircle className="text-blue-500 text-sm" />
         )}
+      </h2>
 
-        {news.breaking && (
-          <span className="absolute top-3 left-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow">
-            🔴 BREAKING
-          </span>
-        )}
+      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+        {news.description}
+      </p>
 
-        <span className="absolute bottom-3 left-3 bg-white/90 backdrop-blur text-black text-xs px-3 py-1 rounded-full font-semibold shadow">
-          {news.category || "LOCAL"}
+      {/* 🔥 ACTION BAR */}
+      <div className="flex items-center gap-4 pt-3 border-t text-gray-500 text-sm flex-wrap">
+
+        <button onClick={(e) => { e.stopPropagation(); handleLike(news._id); }}>
+          {liked[news._id] ? (
+            <FaHeart className="text-red-500" />
+          ) : (
+            <FaRegHeart />
+          )}
+        </button>
+        <span>{news.likes}</span>
+
+        <div className="flex items-center gap-1">
+          <FaRegComment />
+          <span>{news.comments?.length}</span>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <FaShareAlt />
+          <span>{news.comments?.length}</span>
+        </div>
+
+        <button onClick={(e) => { e.stopPropagation(); handleCopyLink(news._id); }}>
+          📋
+        </button>
+
+        <button
+          onClick={(e) => { e.stopPropagation(); handleSave(news._id); }}
+          className="ml-auto"
+        >
+          {saved[news._id] ? <FaBookmark /> : <FaRegBookmark />}
+        </button>
+      </div>
+
+     
+     {/* 🌐 Social Media (Professional Icons Only) */}
+<div className="flex items-center gap-4 pt-2">
+
+  <a
+    href={`https://www.instagram.com/reel/DSEzE6VjA1u/?igsh=enR1OGZ0ZmN4enhz`}
+    target="_blank"
+    onClick={(e) => e.stopPropagation()}
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gradient-to-tr hover:from-pink-500 hover:to-yellow-500 hover:text-white transition"
+  >
+    <FaInstagram />
+  </a>
+
+  <a
+    href={`https://www.facebook.com/share/1Dj3yMqD7R/`}
+    target="_blank"
+    onClick={(e) => e.stopPropagation()}
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-blue-600 hover:text-white transition"
+  >
+    <FaFacebookF />
+  </a>
+
+  <a
+    href={`https://youtube.com/@starnewsnetworks88?si=HHAEJevcHq48Fdrh`}
+    target="_blank"
+    onClick={(e) => e.stopPropagation()}
+    className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-red-600 hover:text-white transition"
+  >
+    <FaYoutube />
+  </a>
+
+</div>
+
+      {/* 🕒 FOOTER */}
+      <div className="flex justify-between text-xs text-gray-400">
+        <span>🕒 {timeAgo(news.createdAt)}</span>
+        <span className="flex items-center gap-1">
+          <FaEye />
+          {news.views ?? 0}
         </span>
       </div>
 
-      <div className="p-4 space-y-3">
-        <h2 className="font-bold text-lg text-gray-900 line-clamp-2 flex items-center gap-2">
-          {news.title}
-          {news.verified && (
-            <FaCheckCircle className="text-blue-500 text-sm" />
-          )}
-        </h2>
-
-        <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-          {news.description}
-        </p>
-
-        <div className="flex items-center gap-4 pt-3 border-t text-gray-500 text-sm">
-
-          <button onClick={() => handleLike(news._id)}>
-            {liked[news._id] ? (
-              <FaHeart className="text-red-500" />
-            ) : (
-              <FaRegHeart />
-            )}
-          </button>
-          <span>{news.likes}</span>
-
-          <div className="flex items-center gap-1">
-            <FaRegComment />
-            <span>{news.comments?.length}</span>
-          </div>
-
-           <div className="flex items-center gap-1">
-            <FaShareAlt />
-            <span>{news.comments?.length}</span>
-          </div>
-
-          <button onClick={() => handleCopyLink(news._id)}>
-            📋
-          </button>
-
-          <button
-            onClick={() => handleSave(news._id)}
-            className="ml-auto"
-          >
-            {saved[news._id] ? <FaBookmark /> : <FaRegBookmark />}
-          </button>
-        </div>
-
-        <div className="flex justify-between text-xs text-gray-400">
-          <span>🕒 {timeAgo(news.createdAt)}</span>
-          <span className="flex items-center gap-1">
-  <FaEye />
-  {news.views ?? 0}
-</span>
-        </div>
-
-        <Link
-          href={`/panna/${news._id}`}
-          className="block text-center text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 py-2 rounded-lg hover:from-red-700 hover:to-red-600 transition"
-        >
-          Read Full Story
-        </Link>
-      </div>
+      <Link
+        href={`/panna/${news._id}`}
+        className="block text-center text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 py-2 rounded-lg hover:from-red-700 hover:to-red-600 transition"
+      >
+        Read Full Story
+      </Link>
     </div>
-  );
+  </div>
+);
 
   return (
     <div className="bg-gray-100 min-h-screen">
