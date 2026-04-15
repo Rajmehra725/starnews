@@ -381,7 +381,7 @@ const renderCard = (news: News, isOld = false) => (
 
   {/* Twitter (X) */}
   <a
-    href={`https://x.com/starnews88s`}
+    href={`https://x.com/starnews88`}
     target="_blank"
     onClick={(e) => e.stopPropagation()}
     className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 bg-sky-500 text-white"
