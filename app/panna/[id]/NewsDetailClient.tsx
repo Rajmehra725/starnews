@@ -63,7 +63,17 @@ const id = params.id as string;
   const [showAll, setShowAll] = useState(false);
 
   const viewedRef = useRef(false);
+const [ads, setAds] = useState<any[]>([]);
 
+const fetchAds = async () => {
+  const res = await axios.get("https://starnewsbackend.onrender.com/api/advertisement");
+  setAds(res.data);
+};
+const getAds = (position: string) =>
+  ads.filter((ad) => ad.position === position);
+useEffect(() => {
+  fetchAds();
+}, []);
   useEffect(() => {
     let vid = localStorage.getItem("visitorId");
     if (!vid) {
@@ -359,6 +369,56 @@ const id = params.id as string;
               leading-snug">
   स्टार न्यूज़ नेटवर्क ब्यूरो पन्ना।
 </p>
+{/* ADS AFTER CONTENT */}
+{getAds("middle").map((ad) => (
+  <div
+    key={ad._id}
+    className="my-4 w-full max-w-3xl mx-auto rounded-lg overflow-hidden shadow-md bg-white"
+  >
+
+    {/* 🔴 ADVERTISEMENT LABEL */}
+    <div className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 flex justify-between items-center">
+      <span>ADVERTISEMENT</span>
+
+      {ad.mediaType === "video" && (
+        <span className="bg-black text-white px-2 py-[2px] rounded text-[10px]">
+          CUT / VIDEO AD
+        </span>
+      )}
+    </div>
+
+    {/* 🖼 IMAGE AD */}
+    {ad.mediaType === "image" && ad.image && (
+      <a href={ad.link} target="_blank">
+        <img
+          src={`https://starnewsbackend.onrender.com${ad.image}`}
+          className="w-full h-[110px] sm:h-[130px] md:h-[150px] object-cover hover:scale-[1.02] transition"
+        />
+      </a>
+    )}
+
+    {/* 🎥 VIDEO AD */}
+    {ad.mediaType === "video" && ad.video && (
+      <a href={ad.link} target="_blank" className="relative block">
+
+        <video
+          src={`https://starnewsbackend.onrender.com${ad.video}`}
+          className="w-full h-[110px] sm:h-[130px] md:h-[150px] object-cover"
+          controls
+          muted
+          playsInline
+        />
+
+        {/* ✂️ CUT INDICATOR */}
+        <div className="absolute bottom-2 right-2 bg-red-600 text-white text-[10px] px-2 py-1 rounded">
+          Click & Watch Full Ad
+        </div>
+
+      </a>
+    )}
+
+  </div>
+))}
         {/* CONTENT */}
         <p className="mt-4 text-gray-800 leading-relaxed text-justify text-base md:text-lg">
           {news.content}
