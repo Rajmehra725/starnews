@@ -5,7 +5,13 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
 import { Eye, Heart, MessageCircle, Share2 } from "lucide-react";
-
+import {
+  FaInstagram,
+  FaFacebookF,
+  FaYoutube,
+  FaTwitter,
+  FaWhatsapp
+} from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
@@ -257,12 +263,102 @@ const id = params.id as string;
         <p className="text-sm text-gray-500 mt-1">
           {new Date(news.createdAt).toLocaleString()}
         </p>
+{/* SOCIAL MEDIA ICONS */}
 
+<div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-3">
+
+  <a
+    href="https://www.instagram.com/reel/DSEzE6VjA1u/?igsh=enR1OGZ0ZmN4enhz"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+               flex items-center justify-center 
+               rounded-full 
+               bg-gradient-to-tr from-pink-500 to-yellow-500 
+               text-white shadow"
+  >
+    <FaInstagram className="text-sm sm:text-base md:text-lg" />
+  </a>
+
+  <a
+    href="https://www.facebook.com/share/1Dj3yMqD7R/"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+               flex items-center justify-center 
+               rounded-full 
+               bg-blue-600 
+               text-white shadow"
+  >
+    <FaFacebookF className="text-sm sm:text-base md:text-lg" />
+  </a>
+
+  <a
+    href="https://youtube.com/@starnewsnetworks88?si=HHAEJevcHq48Fdrh"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+               flex items-center justify-center 
+               rounded-full 
+               bg-red-600 
+               text-white shadow"
+  >
+    <FaYoutube className="text-sm sm:text-base md:text-lg" />
+  </a>
+
+  <a
+    href="https://x.com/starnews88"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 
+               flex items-center justify-center 
+               rounded-full 
+               bg-black 
+               text-white shadow"
+  >
+    <FaTwitter className="text-sm sm:text-base md:text-lg" />
+  </a>
+<a
+  href="https://wa.me/917987667358" // apna number daalo
+  target="_blank"
+  className="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white"
+>
+  <FaWhatsapp />
+</a>
+</div>
+
+{/* REPORTER INFO */}
+<div className="flex items-center gap-3 sm:gap-4 mt-4">
+
+  <img
+    src="/Reporter.jpg"
+    alt="Reporter"
+    className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 
+               rounded-full object-cover 
+               border-2 border-red-600 shadow-sm"
+  />
+
+  <div className="leading-tight">
+    <p className="font-semibold text-gray-800 
+                  text-sm sm:text-base md:text-lg">
+      Prakash Shrivastava
+    </p>
+    <p className="text-xs sm:text-sm text-gray-500">
+      STAR NEWS PANNA
+    </p>
+  </div>
+
+</div>
         {/* DESCRIPTION */}
         <p className="mt-4 text-red-700 font-semibold text-lg md:text-xl leading-relaxed border-l-4 border-red-700 pl-3">
           {news.description}
         </p>
 
+<p className="font-bold text-gray-900 mt-3 
+              text-sm sm:text-base md:text-lg 
+              leading-snug">
+  स्टार न्यूज़ नेटवर्क ब्यूरो पन्ना।
+</p>
         {/* CONTENT */}
         <p className="mt-4 text-gray-800 leading-relaxed text-justify text-base md:text-lg">
           {news.content}
