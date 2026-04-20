@@ -5,13 +5,7 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { io, Socket } from "socket.io-client";
 import { Eye, Heart, MessageCircle, Share2 } from "lucide-react";
-import {
-  FaInstagram,
-  FaFacebookF,
-  FaYoutube,
-  FaTwitter,
-  FaWhatsapp
-} from "react-icons/fa";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
@@ -263,74 +257,12 @@ const id = params.id as string;
         <p className="text-sm text-gray-500 mt-1">
           {new Date(news.createdAt).toLocaleString()}
         </p>
-{/* SOCIAL MEDIA ICONS */}
-<div className="flex items-center gap-4 mt-3">
 
-  <a
-    href="https://www.instagram.com/reel/DSEzE6VjA1u/?igsh=enR1OGZ0ZmN4enhz"
-    target="_blank"
-    className="w-9 h-9 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 to-yellow-500 text-white"
-  >
-    <FaInstagram />
-  </a>
-
-  <a
-    href="https://www.facebook.com/share/1Dj3yMqD7R/"
-    target="_blank"
-    className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-600 text-white"
-  >
-    <FaFacebookF />
-  </a>
-
-  <a
-    href="https://youtube.com/@starnewsnetworks88?si=HHAEJevcHq48Fdrh"
-    target="_blank"
-    className="w-9 h-9 flex items-center justify-center rounded-full bg-red-600 text-white"
-  >
-    <FaYoutube />
-  </a>
-
-  <a
-    href="https://x.com/starnews88"
-    target="_blank"
-    className="w-9 h-9 flex items-center justify-center rounded-full bg-black text-white"
-  >
-    <FaTwitter />
-  </a>
-<a
-  href="https://wa.me/917987667358" // apna number daalo
-  target="_blank"
-  className="w-9 h-9 flex items-center justify-center rounded-full bg-green-500 text-white"
->
-  <FaWhatsapp />
-</a>
-</div>
-{/* REPORTER INFO */}
-<div className="flex items-center gap-3 mt-4">
-
-  <img
-    src="/logo.jpeg" // apni image path daalo
-    className="w-12 h-12 rounded-full object-cover border"
-  />
-
-  <div>
-    <p className="font-semibold text-gray-800 text-sm md:text-base">
-      Prakash Shrivastava 
-    </p>
-    <p className="text-xs text-gray-500">
-      STAR NEWS PANNA
-    </p>
-  </div>
-
-</div>
         {/* DESCRIPTION */}
         <p className="mt-4 text-red-700 font-semibold text-lg md:text-xl leading-relaxed border-l-4 border-red-700 pl-3">
           {news.description}
         </p>
 
-<p className="font-bold text-gray-900 mt-3">
-  स्टार न्यूज़ नेटवर्क ब्यूरो पन्ना।
-</p>
         {/* CONTENT */}
         <p className="mt-4 text-gray-800 leading-relaxed text-justify text-base md:text-lg">
           {news.content}
