@@ -17,9 +17,7 @@ const useInView = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
+      ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.6 }
     );
 
@@ -51,7 +49,14 @@ export default function AdvertisementSystem() {
   return (
     <div className="w-full flex justify-center">
 
-      <div className="w-full max-w-[700px]">
+      {/* ✅ SAME RESPONSIVE AS BANNER */}
+      <div className="
+        w-full
+        max-w-[300px]
+        sm:max-w-[300px]
+        md:max-w-[500px]
+        lg:max-w-full
+      ">
 
         {/* LABEL */}
         <div className="text-[10px] text-gray-500 mb-1 px-1">
@@ -68,13 +73,11 @@ export default function AdvertisementSystem() {
           }}
           loop={ads.length > 1}
         >
-
           {ads.map((ad) => (
             <SwiperSlide key={ad._id}>
               <AdCard ad={ad} />
             </SwiperSlide>
           ))}
-
         </Swiper>
 
       </div>
@@ -91,27 +94,39 @@ function AdCard({ ad }: any) {
   return (
     <div
       ref={ref}
-      className="relative rounded-lg overflow-hidden shadow-md bg-white"
+      className="relative rounded-md overflow-hidden"
     >
 
-      {/* IMAGE OR VIDEO */}
+      {/* MEDIA */}
       {ad.mediaType === "video" ? (
         <video
           src={ad.url}
-          className="w-full h-[160px] md:h-[220px] object-cover"
           autoPlay={isVisible}
           muted
           loop
           playsInline
+          className="
+            w-full 
+            h-[100px]
+            md:h-[140px]
+            lg:h-[200px]
+            object-cover
+          "
         />
       ) : (
         <img
           src={ad.url}
-          className="w-full h-[160px] md:h-[220px] object-cover"
+          className="
+            w-full 
+            h-[100px]
+            md:h-[140px]
+            lg:h-[200px]
+            object-cover
+          "
         />
       )}
 
-      {/* CLICK OVERLAY */}
+      {/* CLICKABLE */}
       <a
         href={ad.link}
         target="_blank"
@@ -119,14 +134,25 @@ function AdCard({ ad }: any) {
         className="absolute inset-0"
       />
 
-      {/* LABEL */}
-      <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] px-2 py-[2px] rounded">
+      {/* AD TAG */}
+      <div className="
+        absolute top-1 right-1
+        bg-red-600 text-white
+        text-[8px]
+        px-2 py-[2px]
+        rounded
+      ">
         AD
       </div>
 
       {/* TITLE */}
       {ad.title && (
-        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-xs px-2 py-1">
+        <div className="
+          absolute bottom-0 left-0 right-0
+          bg-black/70 text-white
+          text-[10px]
+          px-2 py-[3px]
+        ">
           {ad.title}
         </div>
       )}
