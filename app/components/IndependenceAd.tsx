@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import StarImage from "../../public/starnews.jpg";
 
 const AD_DATE = "2026-08-15";
-const STORAGE_KEY = `independence-ad-closed-${AD_DATE}`;u
+const STORAGE_KEY = `independence-ad-closed-${AD_DATE}`;
 
 export default function IndependenceAd() {
   const [isOpen, setIsOpen] = useState(false);
