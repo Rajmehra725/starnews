@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-import OneSignalInit from "./components/OneSignalInit";
+import IndependenceAd from "./components/IndependenceAd";
 import MainLayout from "./MainLayout";
 import BottomTicker from "./components/BottomTicker";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -41,7 +41,7 @@ export default function RootLayout({
       </head>
 
       <body className="min-h-screen bg-gray-100 dark:bg-gray-900 transition">
-         <OneSignalInit />
+        <IndependenceAd />
         <MainLayout>{children}</MainLayout>
         <BottomTicker />
         <WhatsAppFloat />
