@@ -1,36 +1,51 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import TopBar from "./components/TopBar";
+import Header from "./components/Header";
 import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
+import MobileMenu from "./components/MobileMenu";
 import BreakingTicker from "./components/BreakingTicker";
-import { AdBanner } from "./components/AdBanner";
+import Footer from "./components/Footer";
 
-
-export default function MainLayout({ children }: any) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "auto";
-  }, [isOpen]);
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isMobileMenuOpen]);
 
   return (
-    <>
-      <Navbar setIsOpen={setIsOpen} />
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+      {/* 1. TOP BAR */}
+      <TopBar />
+
+      {/* 2. BRAND MASTHEAD */}
+      <Header />
+
+      {/* 3. PRIMARY HORIZONTAL NAV */}
+      <Navbar setIsOpen={setIsMobileMenuOpen} />
+
+      {/* 4. MOBILE SLIDE-OUT DRAWER */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        setIsOpen={setIsMobileMenuOpen}
+      />
+
+      {/* 5. BREAKING NEWS STRIP */}
       <BreakingTicker />
 
-      <div className="flex">
-        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      {/* 6. MAIN CONTENT AREA */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        {children}
+      </main>
 
-        <main className="flex-1 p-2 pb-20">
-        
-          {children}
-        </main>
-      </div>
-
-      <div className="fixed bottom-0 w-full z-50">
-        <AdBanner position="bottom" />
-      </div>
-    </>
+      {/* 7. PORTAL FOOTER */}
+      <Footer />
+    </div>
   );
 }

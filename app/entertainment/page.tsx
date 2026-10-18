@@ -1,97 +1,75 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { fetchNews, NewsItem } from "../../lib/api";
+import NewsCard from "../components/NewsCard";
+import SectionHeader from "../components/SectionHeader";
+import { Film } from "lucide-react";
 
-const Business = () => {
+export default function EntertainmentPage() {
+  const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      const data = await fetchNews();
+      // Filter for entertainment, cinema, lifestyle or all
+      const ent = data.filter(
+        (n) =>
+          n.category?.toLowerCase() === "entertainment" ||
+          n.category?.toLowerCase() === "crime" ||
+          n.category?.toLowerCase() === "local"
+      );
+      setNewsList(ent.length > 0 ? ent : data);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const leadStory = newsList[0];
+  const otherStories = newsList.slice(1);
+
   return (
-    <section className="py-10 bg-white">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="space-y-8">
+      <SectionHeader
+        title="मनोरंजन, बॉलीवुड व सिनेमा"
+        badge="ENTERTAINMENT"
+      />
 
-        {/* Heading */}
-        <div className="border-l-4 border-blue-600 pl-3 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">
-            व्यापार की ताज़ा खबरें
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-          {/* LEFT GRID NEWS */}
-          <div className="lg:col-span-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
-
-              {[1,2,3,4,5,6].map((item)=>(
-                <div key={item} className="group">
-
-                  <div className="relative overflow-hidden rounded-lg">
-                    <Image
-                      src={`/assets/img/news/news3${item}.jpg`}
-                      alt="news"
-                      width={300}
-                      height={200}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition duration-300"
-                    />
-
-                    <span className="absolute top-2 left-2 bg-black text-white text-xs px-2 py-1">
-                      News
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-gray-500 mt-2">
-                    January 17, 2017
-                  </p>
-
-                  <Link
-                    href="/news_info"
-                    className="text-sm font-semibold text-gray-900 hover:text-red-600"
-                  >
-                    अवैध पशु परिवहन पर पन्ना पुलिस की बड़ी कार्रवाई , एक आरोपी गिरफ्तार
-                  </Link>
-
-                </div>
-              ))}
-
-            </div>
-          </div>
-
-          {/* RIGHT FEATURED */}
-          <div className="lg:col-span-4">
-            <div className="relative rounded-xl overflow-hidden group">
-
-              <Image
-                src="/assets/img/news/news31.jpg"
-                alt="news"
-                width={400}
-                height={500}
-                className="w-full h-[420px] object-cover group-hover:scale-105 transition duration-500"
+      {loading ? (
+        <div className="space-y-6 animate-pulse">
+          <div className="h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-64 bg-gray-200 dark:bg-gray-800 rounded-2xl"
               />
-
-              <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-5">
-                <span className="bg-black text-white text-xs px-3 py-1 w-fit mb-2">
-                  News
-                </span>
-
-                <p className="text-white text-sm mb-2">
-                  06 Oct 2025
-                </p>
-
-                <Link
-                  href="/news_info"
-                  className="text-white font-semibold text-lg hover:text-yellow-400"
-                >
-                  रैपुरा में कैट के राष्ट्रीय अध्यक्ष का आगमन आज, जिलाध्यक्ष
-                  केसरवानी ने लोगो से समय पर पहुंचने की अपील
-                </Link>
-
-              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          {leadStory && (
+            <div className="mb-8">
+              <NewsCard news={leadStory} variant="lead" hrefPrefix="/news" />
             </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {otherStories.map((item) => (
+              <NewsCard key={item._id} news={item} hrefPrefix="/news" />
+            ))}
           </div>
 
-        </div>
-      </div>
-    </section>
+          {newsList.length === 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-12 text-center text-gray-500 border">
+              मनोरंजन समाचार अभी लोड हो रहे हैं...
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
-};
-
-export default Business;
+}

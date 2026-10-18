@@ -1,45 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #090d16;
+  --foreground: #f1f5f9;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
-@keyframes scroll {
-  0% {
-    transform: translateX(100%);
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
-  100% {
-    transform: translateX(-100%);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.animate-scroll {
-  display: inline-block;
-  animation: scroll 15s linear infinite;
+.animate-fadeIn {
+  animation: fadeIn 0.25s ease-out forwards;
 }
+
 @keyframes marquee {
   0% {
-    transform: translateX(100%);
+    transform: translateX(0);
   }
   100% {
     transform: translateX(-100%);
@@ -49,7 +51,4 @@ body {
 .animate-marquee {
   display: inline-block;
   animation: marquee 25s linear infinite;
-}
-body {
-  overflow-x: hidden;
 }
